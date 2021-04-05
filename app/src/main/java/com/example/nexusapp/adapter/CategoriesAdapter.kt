@@ -7,10 +7,9 @@ import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 import com.example.nexusapp.R
 import com.example.nexusapp.listener.OnCategoryClickListener
-import com.example.nexusapp.models.CategoryModel
 
 class CategoriesAdapter(
-    private val categories: List<CategoryModel>,
+    private val categories: List<Pair<String,String>>,
     private val onItemClick: OnCategoryClickListener
 ) :
     RecyclerView.Adapter<CategoriesAdapter.MyViewHolder>() {
@@ -33,9 +32,9 @@ class CategoriesAdapter(
     }
 
     override fun onBindViewHolder(holder: MyViewHolder, position: Int) {
-        holder.textView?.text = categories[position].name
+        holder.textView?.text = categories[position].first
         holder.itemView.setOnClickListener {
-            onItemClick.click(categories[position].url)
+            onItemClick.click(categories[position].second)
         }
 
     }

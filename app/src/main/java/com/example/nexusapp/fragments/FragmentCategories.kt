@@ -14,7 +14,6 @@ import com.example.nexusapp.adapter.CategoriesAdapter
 import com.example.nexusapp.constants.*
 import com.example.nexusapp.listener.OnCategoryClickListener
 import com.example.nexusapp.listener.OnResultListener
-import com.example.nexusapp.models.CategoryModel
 import com.example.nexusapp.parser.CategoryParser
 import kotlinx.android.synthetic.main.fragment_categories.*
 import kotlinx.android.synthetic.main.fragment_categories.view.*
@@ -48,7 +47,7 @@ class FragmentCategories: Fragment(), OnResultListener, OnCategoryClickListener 
         return rootView
     }
 
-    override fun getResult(data: List<CategoryModel>) {
+    override fun getResult(data: List<Pair<String,String>>) {
 
         rvCategories?.post{
             adapter = CategoriesAdapter(data,this@FragmentCategories)
@@ -57,7 +56,7 @@ class FragmentCategories: Fragment(), OnResultListener, OnCategoryClickListener 
 
 
         for (item in data){
-            Log.e("categories", "category - ${item.name} - ${item.url}")
+            Log.e("categories", "category - ${item.first} - ${item.second}")
         }
 
     }
