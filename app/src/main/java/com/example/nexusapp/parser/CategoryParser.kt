@@ -10,10 +10,7 @@ import kotlinx.coroutines.async
 import org.jsoup.Jsoup
 import org.jsoup.select.Elements
 
-public class CategoryParser {
-
-
-    //#mainContent > section > div > div.col-1-1.grey > div > ul > li > ul > li:nth-child(1) > div > a > span.category-name
+class CategoryParser {
 
     suspend fun parse(url: String, selector: String, listener: OnResultListener): List<CategoryModel>? {
         var data: ArrayList<CategoryModel> = ArrayList()
