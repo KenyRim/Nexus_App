@@ -1,7 +1,6 @@
 package com.example.nexusapp.constants
 
 const val BASE_URL = "https://www.nexusmods.com/"
-const val FALLOUT4 = "masseffect/"
 const val SECTION = "mods/"
 const val CATEGORIES = "categories/"
 const val GAMES = "GAMES"
