@@ -10,20 +10,21 @@ import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.RecyclerView
 import com.example.nexusapp.App
 import com.example.nexusapp.R
-import com.example.nexusapp.adapter.CategoriesAdapter
+import com.example.nexusapp.adapter.CategoryAdapter
 import com.example.nexusapp.constants.*
 import com.example.nexusapp.listener.OnCategoryClickListener
 import com.example.nexusapp.listener.OnResultListeners
-import com.example.nexusapp.parser.CategoriesParser
+import com.example.nexusapp.models.CategoryModel
+import com.example.nexusapp.parser.CategoryParser
 import kotlinx.android.synthetic.main.fragment_categories.*
 import kotlinx.android.synthetic.main.fragment_categories.view.*
 import kotlinx.coroutines.*
 import kotlinx.coroutines.Dispatchers.IO
 
 
-class FragmentCategories: Fragment(), OnResultListeners.Categories, OnCategoryClickListener {
+class FragmentCategory: Fragment(), OnResultListeners.Category, OnCategoryClickListener {
 
-    private lateinit var adapter:CategoriesAdapter
+    private lateinit var adapter: CategoryAdapter
     private var rvCategories: RecyclerView? = null
 
     override fun onCreateView(
@@ -31,32 +32,32 @@ class FragmentCategories: Fragment(), OnResultListeners.Categories, OnCategoryCl
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
-        val rootView = inflater.inflate(R.layout.fragment_categories, container, false)
+        val rootView = inflater.inflate(R.layout.fragment_category, container, false)
 
         rvCategories = rootView.rv_categories
 
 
         GlobalScope.launch(IO) {
-            CategoriesParser().parse(
+            CategoryParser().parse(
                 BASE_URL + FALLOUT4 + SECTION + CATEGORIES,
                 CATEGORIES_HTML_PATH,
-                this@FragmentCategories
+                this@FragmentCategory
             )
         }
 
         return rootView
     }
 
-    override fun getResult(data: List<Pair<String,String>>) {
+    override fun getResult(data: List<CategoryModel>) {
 
         rvCategories?.post{
-            adapter = CategoriesAdapter(data,this@FragmentCategories)
+            adapter = CategoryAdapter(data,this@FragmentCategory)
             rvCategories?.adapter = adapter
         }
 
 
         for (item in data){
-            Log.e("categories", "category - ${item.first} - ${item.second}")
+            Log.e("categories", "category - ${item.image} - ${item.title}")
         }
 
     }
