@@ -6,6 +6,8 @@ import android.view.ViewGroup
 import android.widget.ImageView
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
+import com.bumptech.glide.Glide
+import com.bumptech.glide.request.RequestOptions
 import com.example.nexusapp.R
 import com.example.nexusapp.listener.OnCategoryClickListener
 import com.example.nexusapp.models.CategoryModel
@@ -24,19 +26,27 @@ class CategoryAdapter(
     }
 
     class MyViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
-        var textView: TextView? = null
-        var imageView: ImageView? = null
-
-        init {
-            textView = itemView.findViewById(R.id.item_category_tv)
-            imageView = itemView.findViewById(R.id.item_category_iv)
-        }
+        var textView: TextView = itemView.findViewById(R.id.item_category_tv)
+        var imageView: ImageView = itemView.findViewById(R.id.item_category_iv)
 
 
     }
 
     override fun onBindViewHolder(holder: MyViewHolder, position: Int) {
-        holder.textView?.text = category[position].description
+        val item = category[position]
+        holder.textView.text = item.description
+
+
+        Glide.with(holder.imageView.context)
+            .load(item.image).apply(
+                RequestOptions()
+                    .placeholder(R.drawable.ic_vault_tec_corporation_logo)
+                    .error(R.drawable.ic_vault_tec_corporation_logo)
+                    .dontAnimate()
+                    .skipMemoryCache(true)
+            )
+
+            .into(holder.imageView)
 
 //        holder.itemView.setOnClickListener {
 //            onItemClick.click(category[position].second)

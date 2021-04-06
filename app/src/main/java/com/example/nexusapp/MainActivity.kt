@@ -2,12 +2,8 @@ package com.example.nexusapp
 
 import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
-import androidx.fragment.app.Fragment
-import androidx.fragment.app.FragmentTransaction
 import com.example.nexusapp.constants.FR_CATEGORIES
 import com.example.nexusapp.fragments.FragmentCategories
-
-
 
 
 class MainActivity : AppCompatActivity() {
@@ -20,6 +16,15 @@ class MainActivity : AppCompatActivity() {
                 .beginTransaction()
                 .add(R.id.container, FragmentCategories(), FR_CATEGORIES)
                 .commit()
+        }
+    }
+
+    override fun onBackPressed() {
+        val myFragment = supportFragmentManager.findFragmentById(R.id.container)
+        if (myFragment != null && supportFragmentManager.backStackEntryCount > 0 && myFragment != FragmentCategories()) {
+            supportFragmentManager.popBackStack()
+        } else {
+            super.onBackPressed()
         }
     }
 }

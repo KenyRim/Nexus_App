@@ -5,10 +5,8 @@ import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.Toast
 import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.RecyclerView
-import com.example.nexusapp.App
 import com.example.nexusapp.R
 import com.example.nexusapp.adapter.CategoriesAdapter
 import com.example.nexusapp.constants.*
@@ -21,9 +19,9 @@ import kotlinx.coroutines.*
 import kotlinx.coroutines.Dispatchers.IO
 
 
-class FragmentCategories: Fragment(), OnResultListeners.Categories, OnCategoryClickListener {
+class FragmentCategories : Fragment(), OnResultListeners.Categories, OnCategoryClickListener {
 
-    private lateinit var adapter:CategoriesAdapter
+    private lateinit var adapter: CategoriesAdapter
     private var rvCategories: RecyclerView? = null
 
     override fun onCreateView(
@@ -47,22 +45,26 @@ class FragmentCategories: Fragment(), OnResultListeners.Categories, OnCategoryCl
         return rootView
     }
 
-    override fun getResult(data: List<Pair<String,String>>) {
+    override fun getResult(data: List<Pair<String, String>>) {
 
-        rvCategories?.post{
-            adapter = CategoriesAdapter(data,this@FragmentCategories)
+        rvCategories?.post {
+            adapter = CategoriesAdapter(data, this@FragmentCategories)
             rvCategories?.adapter = adapter
         }
 
 
-        for (item in data){
+        for (item in data) {
             Log.e("categories", "category - ${item.first} - ${item.second}")
         }
 
     }
 
-    override fun click(data: String) {
-       Toast.makeText(App.applicationContext(),data,Toast.LENGTH_SHORT).show()
+    override fun click(url: String) {
+        activity?.supportFragmentManager
+            ?.beginTransaction()
+            ?.add(R.id.container, FragmentCategory().newInstance(url), FR_CATEGORY)
+            ?.addToBackStack(FR_CATEGORIES)
+            ?.commit()
     }
 
 }

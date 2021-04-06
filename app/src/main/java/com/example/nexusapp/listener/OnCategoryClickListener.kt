@@ -2,6 +2,6 @@ package com.example.nexusapp.listener
 
 
 interface OnCategoryClickListener {
-    fun click(data: String)
+    fun click(url: String)
 
 }
