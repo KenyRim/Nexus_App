@@ -9,12 +9,12 @@ import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
 import com.bumptech.glide.request.RequestOptions
 import com.example.nexusapp.R
-import com.example.nexusapp.listener.OnCategoryClickListener
+import com.example.nexusapp.listener.OnClickListeners
 import com.example.nexusapp.models.CategoryModel
 
 class CategoryAdapter(
     private val category: List<CategoryModel>,
-    private val onItemClick: OnCategoryClickListener
+    private val onItemClick: OnClickListeners.OnContent
 ) :
     RecyclerView.Adapter<CategoryAdapter.MyViewHolder>() {
 

@@ -4,6 +4,7 @@ const val BASE_URL = "https://www.nexusmods.com/"
 const val FALLOUT4 = "masseffect/"
 const val SECTION = "mods/"
 const val CATEGORIES = "categories/"
+const val GAMES = "GAMES"
 
 const val CATEGORIES_HTML_PATH = "#mainContent > section > div > div > div > ul > li > ul > li > div"
 

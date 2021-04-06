@@ -6,11 +6,11 @@ import android.view.ViewGroup
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 import com.example.nexusapp.R
-import com.example.nexusapp.listener.OnCategoryClickListener
+import com.example.nexusapp.listener.OnClickListeners
 
 class GamesAdapter(
-    private val categories: List<Pair<String, String>>,
-    private val onItemClick: OnCategoryClickListener
+    private val games: List<String>,
+    private val onItemClick: OnClickListeners.OnGame
 ) :
     RecyclerView.Adapter<GamesAdapter.MyViewHolder>() {
 
@@ -32,12 +32,12 @@ class GamesAdapter(
     }
 
     override fun onBindViewHolder(holder: MyViewHolder, position: Int) {
-        holder.textView?.text = categories[position].first
+        holder.textView?.text = games[position].capitalize()
         holder.itemView.setOnClickListener {
-            onItemClick.click(categories[position].second)
+            onItemClick.click(games[position]+"/")
         }
 
     }
 
-    override fun getItemCount() = categories.size
+    override fun getItemCount() = games.size
 }

@@ -3,7 +3,9 @@ package com.example.nexusapp
 import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
 import com.example.nexusapp.constants.FR_CATEGORIES
+import com.example.nexusapp.constants.FR_GAMES
 import com.example.nexusapp.fragments.FragmentCategories
+import com.example.nexusapp.fragments.FragmentGames
 
 
 class MainActivity : AppCompatActivity() {
@@ -14,7 +16,7 @@ class MainActivity : AppCompatActivity() {
         if (savedInstanceState == null) {
             supportFragmentManager
                 .beginTransaction()
-                .add(R.id.container, FragmentCategories(), FR_CATEGORIES)
+                .add(R.id.container, FragmentGames(), FR_GAMES)
                 .commit()
         }
     }

@@ -8,13 +8,17 @@ import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.RecyclerView
 import com.example.nexusapp.R
 import com.example.nexusapp.adapter.GamesAdapter
+import com.example.nexusapp.constants.FR_CATEGORIES
+import com.example.nexusapp.constants.FR_GAMES
+import com.example.nexusapp.listener.OnClickListeners
 import kotlinx.android.synthetic.main.fragment_games.view.*
 
 
-class FragmentGames : Fragment() {
+class FragmentGames : Fragment() , OnClickListeners.OnGame{
 
     private lateinit var adapter: GamesAdapter
-    private var rvCategories: RecyclerView? = null
+    private var rvGames: RecyclerView? = null
+    val gamesList: ArrayList<String> = ArrayList()
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -23,12 +27,42 @@ class FragmentGames : Fragment() {
     ): View? {
         val rootView = inflater.inflate(R.layout.fragment_games, container, false)
 
-        rvCategories = rootView.rv_games
+        gamesList.add("gta5")
+        gamesList.add("fallout76")
+        gamesList.add("fallout4")
+        gamesList.add("newvegas")
+        gamesList.add("fallout3")
+        gamesList.add("skyrim")
+        gamesList.add("skyrimspecialedition")
+        gamesList.add("oblivion")
+        gamesList.add("morrowind")
+        gamesList.add("masseffect")
+        gamesList.add("masseffect2")
+        gamesList.add("minecraft")
+        gamesList.add("witcher3")
+        gamesList.add("witcher2")
+        gamesList.add("cyberpunk2077")
+
+
+        rvGames = rootView.rv_games
+        rvGames.run {
+           adapter = GamesAdapter(gamesList, this@FragmentGames)
+            rvGames?.adapter = adapter
+
+        }
 
 
 
 
         return rootView
+    }
+
+    override fun click(gameName: String) {
+        activity?.supportFragmentManager
+            ?.beginTransaction()
+            ?.add(R.id.container, FragmentCategories().newInstance(gameName), FR_CATEGORIES)
+            ?.addToBackStack(FR_GAMES)
+            ?.commit()
     }
 
 

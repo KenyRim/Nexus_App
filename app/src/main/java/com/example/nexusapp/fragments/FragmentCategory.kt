@@ -14,7 +14,7 @@ import com.example.nexusapp.R
 import com.example.nexusapp.adapter.CategoryAdapter
 import com.example.nexusapp.adapter.PaginationScrollListener
 import com.example.nexusapp.constants.*
-import com.example.nexusapp.listener.OnCategoryClickListener
+import com.example.nexusapp.listener.OnClickListeners
 import com.example.nexusapp.listener.OnResultListeners
 import com.example.nexusapp.models.CategoryModel
 import com.example.nexusapp.parser.CategoryParser
@@ -24,10 +24,9 @@ import kotlinx.android.synthetic.main.fragment_category.view.*
 import kotlinx.coroutines.*
 import kotlinx.coroutines.Dispatchers.IO
 import kotlinx.coroutines.Dispatchers.Main
-import kotlin.concurrent.thread
 
 
-class FragmentCategory : Fragment(), OnResultListeners.Category, OnCategoryClickListener {
+class FragmentCategory : Fragment(), OnResultListeners.Category, OnClickListeners.OnContent {
 
     private var contentList:ArrayList<CategoryModel> = ArrayList()
     private lateinit var adapter: CategoryAdapter
@@ -99,7 +98,9 @@ class FragmentCategory : Fragment(), OnResultListeners.Category, OnCategoryClick
 
     override fun getResult(data: List<CategoryModel>) {
         contentList.addAll(data)
-        pagesCount = data.first().pagesCnt
+        if (data != null) {
+            pagesCount = data.first().pagesCnt
+        }
         isLoading = false
 
         GlobalScope.launch(Main) {

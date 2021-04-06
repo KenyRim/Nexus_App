@@ -10,7 +10,7 @@ import androidx.recyclerview.widget.RecyclerView
 import com.example.nexusapp.R
 import com.example.nexusapp.adapter.CategoriesAdapter
 import com.example.nexusapp.constants.*
-import com.example.nexusapp.listener.OnCategoryClickListener
+import com.example.nexusapp.listener.OnClickListeners
 import com.example.nexusapp.listener.OnResultListeners
 import com.example.nexusapp.parser.CategoriesParser
 import kotlinx.android.synthetic.main.fragment_categories.*
@@ -19,10 +19,18 @@ import kotlinx.coroutines.*
 import kotlinx.coroutines.Dispatchers.IO
 
 
-class FragmentCategories : Fragment(), OnResultListeners.Categories, OnCategoryClickListener {
+class FragmentCategories : Fragment(), OnResultListeners.Categories, OnClickListeners.OnCategory {
 
     private lateinit var adapter: CategoriesAdapter
     private var rvCategories: RecyclerView? = null
+
+    fun newInstance(gameName: String): FragmentCategories {
+        val args = Bundle()
+        args.putString(GAMES, gameName)
+        val fragment = FragmentCategories()
+        fragment.arguments = args
+        return fragment
+    }
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -36,7 +44,7 @@ class FragmentCategories : Fragment(), OnResultListeners.Categories, OnCategoryC
 
         GlobalScope.launch(IO) {
             CategoriesParser().parse(
-                BASE_URL + FALLOUT4 + SECTION + CATEGORIES,
+                BASE_URL + arguments?.getString(GAMES) + SECTION + CATEGORIES,
                 CATEGORIES_HTML_PATH,
                 this@FragmentCategories
             )

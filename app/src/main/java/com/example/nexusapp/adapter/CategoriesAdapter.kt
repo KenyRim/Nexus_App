@@ -6,11 +6,11 @@ import android.view.ViewGroup
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 import com.example.nexusapp.R
-import com.example.nexusapp.listener.OnCategoryClickListener
+import com.example.nexusapp.listener.OnClickListeners
 
 class CategoriesAdapter(
     private val categories: List<Pair<String, String>>,
-    private val onItemClick: OnCategoryClickListener
+    private val onItemClick: OnClickListeners.OnCategory
 ) :
     RecyclerView.Adapter<CategoriesAdapter.MyViewHolder>() {
 
