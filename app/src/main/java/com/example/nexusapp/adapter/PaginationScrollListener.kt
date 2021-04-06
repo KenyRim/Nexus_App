@@ -13,7 +13,7 @@ abstract class PaginationScrollListener
  *
  * @param layoutManager
  */
-(var layoutManager: LinearLayoutManager) : RecyclerView.OnScrollListener() {
+    (var layoutManager: LinearLayoutManager) : RecyclerView.OnScrollListener() {
 
     abstract fun isLastPage(): Boolean
 
@@ -29,7 +29,7 @@ abstract class PaginationScrollListener
 
         val firstVisibleItemPosition = layoutManager.findFirstVisibleItemPosition()
 
-        if (!isLoading() && !isLastPage() && totalItemCount >= 19) {
+        if (!isLoading() && !isLastPage()) {
             if (visibleItemCount + firstVisibleItemPosition >= totalItemCount && firstVisibleItemPosition >= 0) {
                 loadMoreItems()
             }

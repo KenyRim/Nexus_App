@@ -23,16 +23,20 @@ import kotlinx.android.synthetic.main.fragment_categories.view.*
 import kotlinx.android.synthetic.main.fragment_category.view.*
 import kotlinx.coroutines.*
 import kotlinx.coroutines.Dispatchers.IO
+import kotlinx.coroutines.Dispatchers.Main
+import kotlin.concurrent.thread
 
 
 class FragmentCategory : Fragment(), OnResultListeners.Category, OnCategoryClickListener {
 
+    private var contentList:ArrayList<CategoryModel> = ArrayList()
     private lateinit var adapter: CategoryAdapter
     private lateinit var rvCategory: RecyclerView
 
     private var currentPage = 1
-    var isLastPage: Boolean = false
-    var isLoading: Boolean = false
+    private var isLastPage: Boolean = false
+    private var isLoading: Boolean = false
+    private var pagesCount:Int = 0
     private lateinit var lm: LinearLayoutManager
 
 
@@ -55,25 +59,8 @@ class FragmentCategory : Fragment(), OnResultListeners.Category, OnCategoryClick
         rvCategory = rootView.rv_category
         rvCategory.layoutManager = lm
 
-        loadContent(currentPage)
-
-        return rootView
-    }
-
-    private fun loadContent(page: Int) {
-        Log.e("aaaaaaaa", "loadContent")
-        GlobalScope.launch(IO) {
-            CategoryParser().parse(
-                arguments?.getString(URL) + "/?page=" + page,
-                this@FragmentCategory
-            )
-        }
-    }
-
-    override fun getResult(data: List<CategoryModel>) {
-        isLoading = false
         rvCategory.post {
-            adapter = CategoryAdapter(data, this@FragmentCategory)
+            adapter = CategoryAdapter(contentList, this@FragmentCategory)
             rvCategory.adapter = adapter
             rvCategory.addOnScrollListener(object : PaginationScrollListener(lm) {
                 override fun isLastPage(): Boolean {
@@ -88,14 +75,37 @@ class FragmentCategory : Fragment(), OnResultListeners.Category, OnCategoryClick
                     isLoading = true
                     Log.e("loadMoreItems", "loadMoreItems")
                     currentPage += 1
-                    loadContent(currentPage)
+                    if (currentPage <= pagesCount){
+                        loadContent(currentPage)
+                    }
+
                 }
             })
         }
 
-        for (item in data) {
-            Log.e("categories", "category - ${item.image} - ${item.title}")
+        loadContent(currentPage)
+
+        return rootView
+    }
+
+    private fun loadContent(page: Int) {
+        GlobalScope.launch(IO) {
+            CategoryParser().parse(
+                arguments?.getString(URL) + "/?page=" + page,
+                this@FragmentCategory
+            )
         }
+    }
+
+    override fun getResult(data: List<CategoryModel>) {
+        contentList.addAll(data)
+        pagesCount = data.first().pagesCnt
+        isLoading = false
+
+        GlobalScope.launch(Main) {
+            adapter.notifyItemInserted(rvCategory.childCount)
+        }
+
 
     }
 
