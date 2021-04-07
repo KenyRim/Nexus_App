@@ -64,6 +64,7 @@ class FragmentGames : Fragment() , OnClickListeners.OnGame{
         if (Connection().isOnline(App.applicationContext()))
         activity?.supportFragmentManager
             ?.beginTransaction()
+            ?.setCustomAnimations(android.R.anim.fade_in, android.R.anim.fade_out)
             ?.add(R.id.container, FragmentCategories().newInstance(gameName), FR_CATEGORIES)
             ?.addToBackStack(FR_GAMES)
             ?.commit()

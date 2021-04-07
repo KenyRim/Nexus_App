@@ -3,6 +3,9 @@ package com.example.nexusapp.adapter
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.view.animation.AlphaAnimation
+import android.view.animation.Animation
+import android.view.animation.ScaleAnimation
 import android.widget.ImageView
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
@@ -50,11 +53,19 @@ class CategoryAdapter(
 
             .into(holder.imageView)
 
+        setAnimation(holder.itemView)
 //        holder.itemView.setOnClickListener {
 //            onItemClick.click(category[position].second)
 //        }
 
     }
+
+    private fun setAnimation(view: View) {
+        val anim = AlphaAnimation(0.0f, 1.0f)
+        anim.duration = 300
+        view.startAnimation(anim)
+    }
+
 
     override fun getItemCount() = category.size
 }

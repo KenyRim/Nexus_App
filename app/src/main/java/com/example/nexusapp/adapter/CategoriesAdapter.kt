@@ -3,10 +3,13 @@ package com.example.nexusapp.adapter
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.view.animation.Animation
+import android.view.animation.ScaleAnimation
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 import com.example.nexusapp.R
 import com.example.nexusapp.listener.OnClickListeners
+
 
 class CategoriesAdapter(
     private val categories: List<Pair<String, String>>,
@@ -37,6 +40,23 @@ class CategoriesAdapter(
             onItemClick.click(categories[position].second)
         }
 
+        setAnimation(holder.itemView)
+
+    }
+
+    private fun setAnimation(view: View) {
+        val anim = ScaleAnimation(
+            0.0f,
+            1.0f,
+            0.0f,
+            1.0f,
+            Animation.RELATIVE_TO_PARENT,
+            0.5f,
+            Animation.RELATIVE_TO_PARENT,
+            0.5f
+        )
+        anim.duration = 300
+        view.startAnimation(anim)
     }
 
     override fun getItemCount() = categories.size

@@ -17,8 +17,8 @@
     <ImageView
         android:id="@+id/item_category_iv"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:adjustViewBounds="true"
+        android:layout_height="230dp"
+        android:scaleType="centerCrop"
         app:layout_constraintBottom_toTopOf="@id/item_title_tv"/>
 
     <TextView

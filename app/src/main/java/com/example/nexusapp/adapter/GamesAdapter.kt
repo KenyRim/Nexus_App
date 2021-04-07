@@ -3,6 +3,7 @@ package com.example.nexusapp.adapter
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.view.animation.AlphaAnimation
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 import com.example.nexusapp.R
@@ -34,9 +35,17 @@ class GamesAdapter(
     override fun onBindViewHolder(holder: MyViewHolder, position: Int) {
         holder.textView?.text = games[position].capitalize()
         holder.itemView.setOnClickListener {
-            onItemClick.click(games[position]+"/")
+            onItemClick.click(games[position] + "/")
         }
 
+        setAnimation(holder.itemView)
+
+    }
+
+    private fun setAnimation(view: View) {
+        val anim = AlphaAnimation(0.0f, 1.0f)
+        anim.duration = 200
+        view.startAnimation(anim)
     }
 
     override fun getItemCount() = games.size

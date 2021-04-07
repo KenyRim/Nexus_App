@@ -70,6 +70,7 @@ class FragmentCategories : Fragment(), OnResultListeners.Categories, OnClickList
         if (Connection().isOnline(App.applicationContext()))
         activity?.supportFragmentManager
             ?.beginTransaction()
+            ?.setCustomAnimations(android.R.anim.fade_in, android.R.anim.fade_out)
             ?.add(R.id.container, FragmentCategory().newInstance(url), FR_CATEGORY)
             ?.addToBackStack(FR_CATEGORIES)
             ?.commit()
