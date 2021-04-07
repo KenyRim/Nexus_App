@@ -16,7 +16,7 @@ class CategoryParser {
         url: String?,
         listener: FragmentCategory
     ): List<CategoryModel> {
-        var data: ArrayList<CategoryModel> = ArrayList()
+        val data: ArrayList<CategoryModel> = ArrayList()
 
         val parse: Deferred<List<CategoryModel>> = CoroutineScope(Dispatchers.IO).async {
             val doc = Jsoup.connect(url).get()
@@ -24,10 +24,7 @@ class CategoryParser {
             val pages: Elements =
                 doc.select("#mod-list > div.pagenav.clearfix.head-nav > div > ul > li")
 
-            Log.e("url", "$url")
-            Log.e("metaElements", "${metaElements.size}")
             val partOfPath = "div.mod-tile-left > div.tile-desc.motm-tile > div.tile-content"
-          //  Log.e("pages","pages buttons ${pages.size} / total pages ${pages[pages.size-2].text()}")
             for (element in metaElements) {
                 data.add(
                     CategoryModel(

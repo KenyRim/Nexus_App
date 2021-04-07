@@ -6,6 +6,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
+import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
@@ -18,24 +19,31 @@ import com.example.nexusapp.listener.OnClickListeners
 import com.example.nexusapp.listener.OnResultListeners
 import com.example.nexusapp.models.CategoryModel
 import com.example.nexusapp.parser.CategoryParser
+import com.example.nexusapp.utils.Connection
+import com.google.android.material.snackbar.Snackbar
 import kotlinx.android.synthetic.main.fragment_categories.*
 import kotlinx.android.synthetic.main.fragment_categories.view.*
+import kotlinx.android.synthetic.main.fragment_category.*
 import kotlinx.android.synthetic.main.fragment_category.view.*
 import kotlinx.coroutines.*
 import kotlinx.coroutines.Dispatchers.IO
 import kotlinx.coroutines.Dispatchers.Main
+import java.util.*
+import kotlin.collections.ArrayList
 
 
 class FragmentCategory : Fragment(), OnResultListeners.Category, OnClickListeners.OnContent {
 
-    private var contentList:ArrayList<CategoryModel> = ArrayList()
+    private var contentList: ArrayList<CategoryModel> = ArrayList()
     private lateinit var adapter: CategoryAdapter
     private lateinit var rvCategory: RecyclerView
+    private lateinit var rootLayout: ConstraintLayout
 
     private var currentPage = 1
     private var isLastPage: Boolean = false
     private var isLoading: Boolean = false
-    private var pagesCount:Int = 0
+    private var pagesCount: Int = 0
+    private var antispam = 0
     private lateinit var lm: LinearLayoutManager
 
 
@@ -56,12 +64,13 @@ class FragmentCategory : Fragment(), OnResultListeners.Category, OnClickListener
 
         lm = LinearLayoutManager(context, LinearLayoutManager.VERTICAL, false)
         rvCategory = rootView.rv_category
+        rootLayout = rootView.root_view
         rvCategory.layoutManager = lm
 
         rvCategory.post {
             adapter = CategoryAdapter(contentList, this@FragmentCategory)
             rvCategory.adapter = adapter
-            rvCategory.addOnScrollListener(object : PaginationScrollListener(lm) {
+            rvCategory.addOnScrollListener(object : PaginationScrollListener(lm, pagesCount) {
                 override fun isLastPage(): Boolean {
                     return isLastPage
                 }
@@ -71,11 +80,16 @@ class FragmentCategory : Fragment(), OnResultListeners.Category, OnClickListener
                 }
 
                 override fun loadMoreItems() {
-                    isLoading = true
-                    currentPage++
                     Log.e("loadMoreItems", "loadMoreItems")
-                    if (currentPage <= pagesCount+1){
-                        loadContent(currentPage)
+                    if (currentPage <= pagesCount) {
+                        isLoading = true
+                        if (Connection().isOnline(App.applicationContext())) {
+
+                            currentPage++
+                            loadContent(currentPage)
+                        } else {
+                            snackBar()
+                        }
                     }
 
 
@@ -87,6 +101,31 @@ class FragmentCategory : Fragment(), OnResultListeners.Category, OnClickListener
 
         return rootView
     }
+
+    fun snackBar() {
+        if (antispam == 0) {
+
+            Snackbar
+                .make(rootLayout, "Check your internet connection!", Snackbar.LENGTH_INDEFINITE)
+                .setAction(
+                    "try again"
+                ) {
+                    if (Connection().isOnline(App.applicationContext())) {
+                        currentPage++
+                        loadContent(currentPage)
+                        isLoading = false
+                        antispam = 0
+                    } else {
+                        snackBar()
+                    }
+                }
+                .show()
+
+
+        }
+        antispam = 1
+    }
+
 
     private fun loadContent(page: Int) {
         GlobalScope.launch(IO) {
@@ -106,7 +145,9 @@ class FragmentCategory : Fragment(), OnResultListeners.Category, OnClickListener
 
         GlobalScope.launch(Main) {
             adapter.notifyItemInserted(adapter.itemCount)
-            Log.e("child count","count = "+adapter.itemCount)
+            Log.e("child count", "count = " + adapter.itemCount)
+            check()
+
         }
 
 
@@ -116,4 +157,18 @@ class FragmentCategory : Fragment(), OnResultListeners.Category, OnClickListener
         Toast.makeText(App.applicationContext(), data, Toast.LENGTH_SHORT).show()
     }
 
+
+    private fun check() {
+        for (i in 0 until contentList.size) {
+            for (j in i + 1 until contentList.size) {
+                if (contentList[i].url == contentList[j].url) {
+                    Log.e("---------","repeat detected at $i position ${contentList[i].url}")
+                }
+            }
+        }
+    }
+
 }
+
+
+

@@ -4,13 +4,16 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Toast
 import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.RecyclerView
+import com.example.nexusapp.App
 import com.example.nexusapp.R
 import com.example.nexusapp.adapter.GamesAdapter
 import com.example.nexusapp.constants.FR_CATEGORIES
 import com.example.nexusapp.constants.FR_GAMES
 import com.example.nexusapp.listener.OnClickListeners
+import com.example.nexusapp.utils.Connection
 import kotlinx.android.synthetic.main.fragment_games.view.*
 
 
@@ -58,11 +61,14 @@ class FragmentGames : Fragment() , OnClickListeners.OnGame{
     }
 
     override fun click(gameName: String) {
+        if (Connection().isOnline(App.applicationContext()))
         activity?.supportFragmentManager
             ?.beginTransaction()
             ?.add(R.id.container, FragmentCategories().newInstance(gameName), FR_CATEGORIES)
             ?.addToBackStack(FR_GAMES)
             ?.commit()
+        else
+            Toast.makeText(App.applicationContext(),"Check your internet connection!",Toast.LENGTH_SHORT).show()
     }
 
 

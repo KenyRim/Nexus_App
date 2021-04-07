@@ -12,15 +12,12 @@ import org.jsoup.select.Elements
 class CategoriesParser {
 
     suspend fun parse(url: String, selector: String, listener: FragmentCategories): List<Pair<String,String>> {
-        var data: ArrayList<Pair<String,String>> = ArrayList()
+        val data: ArrayList<Pair<String,String>> = ArrayList()
 
         val parse: Deferred<List<Pair<String,String>>?> = CoroutineScope(Dispatchers.IO).async {
             val doc = Jsoup.connect(url).get()
-            val metaElements: Elements = doc.select(selector)
 
-            Log.e("url","$url")
-            Log.e("selector","$selector")
-            Log.e("metaElements","${metaElements.size}")
+            val metaElements: Elements = doc.select(selector)
 
             for(element in metaElements){
                 data.add(element.select("a > span.category-name").text() to

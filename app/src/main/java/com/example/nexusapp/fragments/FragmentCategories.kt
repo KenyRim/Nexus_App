@@ -5,14 +5,17 @@ import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Toast
 import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.RecyclerView
+import com.example.nexusapp.App
 import com.example.nexusapp.R
 import com.example.nexusapp.adapter.CategoriesAdapter
 import com.example.nexusapp.constants.*
 import com.example.nexusapp.listener.OnClickListeners
 import com.example.nexusapp.listener.OnResultListeners
 import com.example.nexusapp.parser.CategoriesParser
+import com.example.nexusapp.utils.Connection
 import kotlinx.android.synthetic.main.fragment_categories.*
 import kotlinx.android.synthetic.main.fragment_categories.view.*
 import kotlinx.coroutines.*
@@ -60,19 +63,20 @@ class FragmentCategories : Fragment(), OnResultListeners.Categories, OnClickList
             rvCategories?.adapter = adapter
         }
 
-
-        for (item in data) {
-            Log.e("categories", "category - ${item.first} - ${item.second}")
-        }
-
     }
 
     override fun click(url: String) {
+
+        if (Connection().isOnline(App.applicationContext()))
         activity?.supportFragmentManager
             ?.beginTransaction()
             ?.add(R.id.container, FragmentCategory().newInstance(url), FR_CATEGORY)
             ?.addToBackStack(FR_CATEGORIES)
             ?.commit()
+        else
+            Toast.makeText(App.applicationContext(),"Check your internet connection!", Toast.LENGTH_SHORT).show()
+
+
     }
 
 }

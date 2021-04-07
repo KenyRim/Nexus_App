@@ -26,7 +26,8 @@ class CategoryAdapter(
     }
 
     class MyViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
-        var textView: TextView = itemView.findViewById(R.id.item_category_tv)
+        var titleTv: TextView = itemView.findViewById(R.id.item_title_tv)
+        var descriptionTv: TextView = itemView.findViewById(R.id.item_description_tv)
         var imageView: ImageView = itemView.findViewById(R.id.item_category_iv)
 
 
@@ -34,7 +35,8 @@ class CategoryAdapter(
 
     override fun onBindViewHolder(holder: MyViewHolder, position: Int) {
         val item = category[position]
-        holder.textView.text = item.description
+        holder.titleTv.text = item.title
+        holder.descriptionTv.text = item.description
 
 
         Glide.with(holder.imageView.context)

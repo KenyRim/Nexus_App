@@ -13,7 +13,7 @@ abstract class PaginationScrollListener
  *
  * @param layoutManager
  */
-    (var layoutManager: LinearLayoutManager) : RecyclerView.OnScrollListener() {
+    (var layoutManager: LinearLayoutManager, val totalPages:Int) : RecyclerView.OnScrollListener() {
 
     abstract fun isLastPage(): Boolean
 
@@ -25,7 +25,7 @@ abstract class PaginationScrollListener
         val visibleItemCount = layoutManager.childCount
         val totalItemCount = layoutManager.itemCount
 
-        Log.e("visible", layoutManager.itemCount.toString()+"  "+layoutManager.childCount)
+        Log.e("visible", "$totalItemCount  $totalPages")
 
         val firstVisibleItemPosition = layoutManager.findFirstVisibleItemPosition()
 
