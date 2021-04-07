@@ -72,11 +72,12 @@ class FragmentCategory : Fragment(), OnResultListeners.Category, OnClickListener
 
                 override fun loadMoreItems() {
                     isLoading = true
+                    currentPage++
                     Log.e("loadMoreItems", "loadMoreItems")
-                    currentPage += 1
-                    if (currentPage <= pagesCount){
+                    if (currentPage <= pagesCount+1){
                         loadContent(currentPage)
                     }
+
 
                 }
             })
@@ -90,7 +91,7 @@ class FragmentCategory : Fragment(), OnResultListeners.Category, OnClickListener
     private fun loadContent(page: Int) {
         GlobalScope.launch(IO) {
             CategoryParser().parse(
-                arguments?.getString(URL) + "/?page=" + page,
+                arguments?.getString(URL) + "?page=$page",
                 this@FragmentCategory
             )
         }
@@ -98,13 +99,14 @@ class FragmentCategory : Fragment(), OnResultListeners.Category, OnClickListener
 
     override fun getResult(data: List<CategoryModel>) {
         contentList.addAll(data)
-        if (data != null) {
+        if (data.isNotEmpty()) {
             pagesCount = data.first().pagesCnt
         }
         isLoading = false
 
         GlobalScope.launch(Main) {
-            adapter.notifyItemInserted(rvCategory.childCount)
+            adapter.notifyItemInserted(adapter.itemCount)
+            Log.e("child count","count = "+adapter.itemCount)
         }
 
 

@@ -12,7 +12,7 @@ class OnClickListeners {
     }
 
     interface OnContent{
-        fun click(url: String)
+        fun click(data: String)
     }
 
 

@@ -27,7 +27,7 @@ class CategoryParser {
             Log.e("url", "$url")
             Log.e("metaElements", "${metaElements.size}")
             val partOfPath = "div.mod-tile-left > div.tile-desc.motm-tile > div.tile-content"
-            Log.e("pages","size ${pages.size}")
+          //  Log.e("pages","pages buttons ${pages.size} / total pages ${pages[pages.size-2].text()}")
             for (element in metaElements) {
                 data.add(
                     CategoryModel(
@@ -35,7 +35,7 @@ class CategoryParser {
                         element.select("p.tile-name > a").text(),
                         element.select("$partOfPath > p.desc").text(),
                         element.select("$partOfPath > p.tile-name > a").attr("href"),
-                        if (pages.size>1) pages[pages.size - 2].select("a").text().toInt() else 1
+                        if (pages.size>1) pages[pages.size-2].text().toInt() else 1
                     )
                 )
             }
