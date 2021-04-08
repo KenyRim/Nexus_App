@@ -1,6 +1,7 @@
 package com.example.nexusapp.parser;
 
 import android.util.Log
+import com.example.nexusapp.fragments.FragmentArticle
 import com.example.nexusapp.fragments.FragmentCategory
 import com.example.nexusapp.models.CategoryModel
 import kotlinx.coroutines.CoroutineScope
@@ -25,7 +26,6 @@ class CategoryParser {
                 doc.select("#mod-list > div.pagenav.clearfix.head-nav > div > ul > li")
             val partOfPath = "div.mod-tile-left > div.tile-desc.motm-tile > div.tile-content"
             for (element in metaElements) {
-                Log.e("aaaaaaaaaaaa",element.select("p.tile-name > a").text())
                 data.add(
                     CategoryModel(
                         element.select("div.mod-tile-left > a > figure > div > img").attr("src"),

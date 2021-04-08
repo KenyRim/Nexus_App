@@ -1,5 +1,6 @@
 package com.example.nexusapp.adapter
 
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -36,8 +37,9 @@ class CategoriesAdapter(
 
     override fun onBindViewHolder(holder: MyViewHolder, position: Int) {
         holder.textView?.text = categories[position].first
+        holder.itemView.transitionName = categories[position].first
         holder.itemView.setOnClickListener {
-            onItemClick.click(categories[position].second)
+            onItemClick.click(categories[position].second,holder.itemView)
         }
 
         setAnimation(holder.itemView)

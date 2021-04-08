@@ -1,5 +1,6 @@
 package com.example.nexusapp.listener
 
+import com.example.nexusapp.models.ArticleModel
 import com.example.nexusapp.models.CategoryModel
 
 class OnResultListeners {
@@ -10,6 +11,10 @@ class OnResultListeners {
 
     interface Category{
         fun getResult(data: List<CategoryModel>)
+    }
+
+    interface FullArticle{
+        fun getResult(data: ArticleModel)
     }
 
 

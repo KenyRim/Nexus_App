@@ -1,10 +1,13 @@
 package com.example.nexusapp.fragments
 
 import android.os.Bundle
+import android.transition.Transition
+import android.transition.TransitionInflater
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
+import androidx.core.view.doOnPreDraw
 import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.RecyclerView
 import com.example.nexusapp.App
@@ -17,11 +20,19 @@ import com.example.nexusapp.utils.Connection
 import kotlinx.android.synthetic.main.fragment_games.view.*
 
 
-class FragmentGames : Fragment() , OnClickListeners.OnGame{
+class FragmentGames : Fragment(), OnClickListeners.OnGame {
 
     private lateinit var adapter: GamesAdapter
     private var rvGames: RecyclerView? = null
-    val gamesList: ArrayList<String> = ArrayList()
+    lateinit var gamesList: ArrayList<String>
+
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+        postponeEnterTransition()
+        view.doOnPreDraw { startPostponedEnterTransition() }
+
+    }
+
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -30,26 +41,28 @@ class FragmentGames : Fragment() , OnClickListeners.OnGame{
     ): View? {
         val rootView = inflater.inflate(R.layout.fragment_games, container, false)
 
-        gamesList.add("gta5")
-        gamesList.add("fallout76")
-        gamesList.add("fallout4")
-        gamesList.add("newvegas")
-        gamesList.add("fallout3")
-        gamesList.add("skyrim")
-        gamesList.add("skyrimspecialedition")
-        gamesList.add("oblivion")
-        gamesList.add("morrowind")
-        gamesList.add("masseffect")
-        gamesList.add("masseffect2")
-        gamesList.add("minecraft")
-        gamesList.add("witcher3")
-        gamesList.add("witcher2")
-        gamesList.add("cyberpunk2077")
+        gamesList = ArrayList()
+        val list = arrayOf("gta5","fallout76",
+            "fallout4",
+            "newvegas",
+            "fallout3",
+            "skyrim",
+            "skyrimspecialedition",
+            "oblivion",
+            "morrowind",
+            "masseffect",
+            "masseffect2",
+            "minecraft",
+            "witcher3",
+            "witcher2",
+        "cyberpunk2077")
+
+        gamesList.addAll(list)
 
 
         rvGames = rootView.rv_games
         rvGames.run {
-           adapter = GamesAdapter(gamesList, this@FragmentGames)
+            adapter = GamesAdapter(gamesList, this@FragmentGames)
             rvGames?.adapter = adapter
 
         }
@@ -60,16 +73,27 @@ class FragmentGames : Fragment() , OnClickListeners.OnGame{
         return rootView
     }
 
-    override fun click(gameName: String) {
+    override fun click(gameName: String, view: View) {
         if (Connection().isOnline(App.applicationContext()))
-        activity?.supportFragmentManager
-            ?.beginTransaction()
-            ?.setCustomAnimations(android.R.anim.fade_in, android.R.anim.fade_out)
-            ?.add(R.id.container, FragmentCategories().newInstance(gameName), FR_CATEGORIES)
-            ?.addToBackStack(FR_GAMES)
-            ?.commit()
+            activity?.supportFragmentManager
+                ?.beginTransaction()
+                ?.setReorderingAllowed(true)
+             //   ?.hide(this)
+                ?.addSharedElement(view, view.transitionName)
+                //   ?.setCustomAnimations(android.R.anim.fade_in, android.R.anim.fade_out)
+                ?.replace(
+                    R.id.container,
+                    FragmentCategories().newInstance(gameName, view.transitionName),
+                    FR_CATEGORIES
+                )
+                ?.addToBackStack(FR_GAMES)
+                ?.commit()
         else
-            Toast.makeText(App.applicationContext(),"Check your internet connection!",Toast.LENGTH_SHORT).show()
+            Toast.makeText(
+                App.applicationContext(),
+                "Check your internet connection!",
+                Toast.LENGTH_SHORT
+            ).show()
     }
 
 

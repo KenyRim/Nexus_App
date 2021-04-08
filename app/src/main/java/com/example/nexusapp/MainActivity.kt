@@ -19,14 +19,14 @@ class MainActivity : AppCompatActivity() {
         if (savedInstanceState == null) {
             supportFragmentManager
                 .beginTransaction()
-                .add(R.id.container, FragmentGames(), FR_GAMES)
+                .replace(R.id.container, FragmentGames(), FR_GAMES)
                 .commit()
         }
     }
 
     override fun onBackPressed() {
         val myFragment = supportFragmentManager.findFragmentById(R.id.container)
-        if (myFragment != null && supportFragmentManager.backStackEntryCount > 0 && myFragment != FragmentCategories()) {
+        if (myFragment != null && supportFragmentManager.backStackEntryCount > 0 && myFragment != FragmentGames()) {
             supportFragmentManager.popBackStack()
         } else {
             super.onBackPressed()

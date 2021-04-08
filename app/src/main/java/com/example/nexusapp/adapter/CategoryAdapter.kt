@@ -4,8 +4,6 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.view.animation.AlphaAnimation
-import android.view.animation.Animation
-import android.view.animation.ScaleAnimation
 import android.widget.ImageView
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
@@ -40,7 +38,7 @@ class CategoryAdapter(
         val item = category[position]
         holder.titleTv.text = item.title
         holder.descriptionTv.text = item.description
-
+        holder.imageView.transitionName = item.url
 
         Glide.with(holder.imageView.context)
             .load(item.image).apply(
@@ -54,9 +52,9 @@ class CategoryAdapter(
             .into(holder.imageView)
 
         setAnimation(holder.itemView)
-//        holder.itemView.setOnClickListener {
-//            onItemClick.click(category[position].second)
-//        }
+        holder.itemView.setOnClickListener {
+            onItemClick.click(category[position].url,holder.imageView)
+        }
 
     }
 
