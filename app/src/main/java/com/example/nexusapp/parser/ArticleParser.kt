@@ -15,16 +15,24 @@ import org.jsoup.select.Elements
 
 class ArticleParser {
 
-    suspend fun parse(url: String, selector: String, listener: FragmentArticle): ArticleModel {
-        var data = ArticleModel()
+    suspend fun parse(url: String,listener: FragmentArticle): ArticleModel {
+        var data = ArticleModel("", emptyList(),"")
 
         val parse: Deferred<ArticleModel> = CoroutineScope(Dispatchers.IO).async {
 
             try {
                 val doc = Jsoup.connect(url).get()
-                val metaElements: Elements = doc.select(selector)
+                val title: Elements = doc.select("#pagetitle > h1")
+                val images: Elements = doc.select("#sidebargallery > ul > li")//   > figure > a > img
+                //
 
-                data = ArticleModel()
+
+
+                for (element in images){
+                    Log.e("assdfsdfsdf", element.attr("data-src").toString())
+                }
+
+                data = ArticleModel(title.text(), emptyList(),"")
             }catch (e: HttpStatusException){
             }
 

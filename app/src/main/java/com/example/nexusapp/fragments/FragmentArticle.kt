@@ -4,6 +4,7 @@ import android.os.Build
 import android.os.Bundle
 import android.transition.Fade
 import android.transition.TransitionInflater
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -72,7 +73,7 @@ class FragmentArticle : Fragment(), OnResultListeners.FullArticle {
             activity?.onBackPressed()
         }
 
-       // loadContent()
+       loadContent()
         return rootView
     }
 
@@ -81,8 +82,7 @@ class FragmentArticle : Fragment(), OnResultListeners.FullArticle {
         view?.progressbar?.visibility = View.VISIBLE
         GlobalScope.launch(IO) {
             ArticleParser().parse(
-                "",
-                "",
+                arguments?.getString(URL).toString(),
                 this@FragmentArticle
             )
         }
@@ -90,7 +90,9 @@ class FragmentArticle : Fragment(), OnResultListeners.FullArticle {
 
 
     override fun getResult(data: ArticleModel) {
-        TODO("Not yet implemented")
+      //  TODO("Not yet implemented")
+
+      //  Log.e("result",data.)
     }
 
 
