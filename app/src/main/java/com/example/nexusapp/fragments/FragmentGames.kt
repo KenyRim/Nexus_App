@@ -1,8 +1,6 @@
 package com.example.nexusapp.fragments
 
 import android.os.Bundle
-import android.transition.Transition
-import android.transition.TransitionInflater
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -12,12 +10,14 @@ import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.RecyclerView
 import com.example.nexusapp.App
 import com.example.nexusapp.R
-import com.example.nexusapp.adapter.GamesAdapter
+import com.example.nexusapp.adapters.GamesAdapter
 import com.example.nexusapp.constants.FR_CATEGORIES
 import com.example.nexusapp.constants.FR_GAMES
 import com.example.nexusapp.listener.OnClickListeners
 import com.example.nexusapp.utils.Connection
 import kotlinx.android.synthetic.main.fragment_games.view.*
+import kotlinx.android.synthetic.main.main_titlebar.*
+import kotlinx.android.synthetic.main.main_titlebar.view.*
 
 
 class FragmentGames : Fragment(), OnClickListeners.OnGame {
@@ -67,7 +67,18 @@ class FragmentGames : Fragment(), OnClickListeners.OnGame {
 
         }
 
-
+        rootView.saved_btn_iv.setOnClickListener{
+            activity?.supportFragmentManager
+                ?.beginTransaction()
+                ?.setReorderingAllowed(true)
+                ?.replace(
+                    R.id.container,
+                    FragmentDatabase(),
+                    FR_CATEGORIES
+                )
+                ?.addToBackStack(FR_GAMES)
+                ?.commit()
+        }
 
 
         return rootView

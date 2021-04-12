@@ -1,4 +1,4 @@
-package com.example.nexusapp.adapter
+package com.example.nexusapp.adapters
 
 import android.view.LayoutInflater
 import android.view.View

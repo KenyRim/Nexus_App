@@ -1,4 +1,5 @@
 package com.example.nexusapp.models
 
-class ArticleModel(title:String,images:List<String>,article:String) {
+class ArticleModel(val textAbout: String, val images: List<String>, val article: String) {
+
 }

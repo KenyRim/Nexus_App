@@ -14,7 +14,7 @@ class OnResultListeners {
     }
 
     interface FullArticle{
-        fun getResult(data: ArticleModel)
+        fun getResult(article: ArticleModel)
     }
 
 

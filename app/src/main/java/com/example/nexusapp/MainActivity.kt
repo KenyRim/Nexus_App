@@ -6,6 +6,7 @@ import androidx.appcompat.app.AppCompatActivity
 import com.example.nexusapp.constants.FR_GAMES
 import com.example.nexusapp.fragments.FragmentCategories
 import com.example.nexusapp.fragments.FragmentGames
+import com.example.nexusapp.utils.Connection
 
 
 class MainActivity : AppCompatActivity() {
@@ -17,19 +18,27 @@ class MainActivity : AppCompatActivity() {
         setContentView(R.layout.activity_main)
 
         if (savedInstanceState == null) {
-            supportFragmentManager
-                .beginTransaction()
-                .replace(R.id.container, FragmentGames(), FR_GAMES)
-                .commit()
+            startFragment()
         }
     }
 
     override fun onBackPressed() {
-        val myFragment = supportFragmentManager.findFragmentById(R.id.container)
-        if (myFragment != null && supportFragmentManager.backStackEntryCount > 0 && myFragment != FragmentGames()) {
-            supportFragmentManager.popBackStack()
-        } else {
-            super.onBackPressed()
+        if(Connection().isOnline(this)) {
+            val myFragment = supportFragmentManager.findFragmentById(R.id.container)
+            if (myFragment != null && supportFragmentManager.backStackEntryCount > 0 && myFragment != FragmentGames()) {
+                supportFragmentManager.popBackStack()
+            } else {
+                super.onBackPressed()
+            }
+        }else{
+            startFragment()
         }
+    }
+
+    private fun startFragment(){
+        supportFragmentManager
+            .beginTransaction()
+            .replace(R.id.container, FragmentGames(), FR_GAMES)
+            .commit()
     }
 }

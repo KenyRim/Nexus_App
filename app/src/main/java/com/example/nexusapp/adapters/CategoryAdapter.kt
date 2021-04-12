@@ -1,4 +1,4 @@
-package com.example.nexusapp.adapter
+package com.example.nexusapp.adapters
 
 import android.view.LayoutInflater
 import android.view.View
@@ -53,7 +53,7 @@ class CategoryAdapter(
 
         setAnimation(holder.itemView)
         holder.itemView.setOnClickListener {
-            onItemClick.click(category[position].url,holder.imageView)
+            onItemClick.click(category[position].url,holder.imageView,category[position].title)
         }
 
     }

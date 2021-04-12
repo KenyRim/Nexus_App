@@ -1,5 +1,6 @@
 package com.example.nexusapp.fragments
 
+import android.content.Context
 import android.os.Build
 import android.os.Bundle
 import android.transition.Fade
@@ -16,21 +17,22 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.example.nexusapp.App
 import com.example.nexusapp.R
-import com.example.nexusapp.adapter.CategoryAdapter
-import com.example.nexusapp.adapter.PaginationScrollListener
+import com.example.nexusapp.adapters.CategoryAdapter
+import com.example.nexusapp.adapters.PaginationScrollListener
 import com.example.nexusapp.constants.*
+import com.example.nexusapp.database.Database
 import com.example.nexusapp.listener.OnClickListeners
 import com.example.nexusapp.listener.OnResultListeners
 import com.example.nexusapp.models.CategoryModel
-import com.example.nexusapp.parser.CategoryParser
+import com.example.nexusapp.models.DbModel
+import com.example.nexusapp.parser.Parser
 import com.example.nexusapp.utils.Connection
 import com.google.android.material.snackbar.Snackbar
-import kotlinx.android.synthetic.main.fragment_category.*
 import kotlinx.android.synthetic.main.fragment_category.view.*
+import kotlinx.android.synthetic.main.item_category.*
 import kotlinx.android.synthetic.main.titlebar.progressbar
 import kotlinx.android.synthetic.main.titlebar.view.top_bar
 import kotlinx.android.synthetic.main.titlebar.view.title_tv
-import kotlinx.android.synthetic.main.titlebar.*
 import kotlinx.android.synthetic.main.titlebar.view.*
 import kotlinx.coroutines.*
 import kotlinx.coroutines.Dispatchers.IO
@@ -39,7 +41,8 @@ import java.util.*
 import kotlin.collections.ArrayList
 
 
-class FragmentCategory : Fragment(), OnResultListeners.Category, OnClickListeners.OnContent {
+class FragmentCategory : Fragment(), OnResultListeners.Category, OnClickListeners.OnContent,
+    OnClickListeners.SaveClick {
 
     private var contentList: ArrayList<CategoryModel> = ArrayList()
     private lateinit var adapter: CategoryAdapter
@@ -97,6 +100,7 @@ class FragmentCategory : Fragment(), OnResultListeners.Category, OnClickListener
         rootView.back_btn_iv.setOnClickListener {
             activity?.onBackPressed()
         }
+        rootView?.progressbar?.visibility = View.GONE
 
         lm = LinearLayoutManager(context, LinearLayoutManager.VERTICAL, false)
         rvCategory = rootView.rv_category
@@ -132,28 +136,26 @@ class FragmentCategory : Fragment(), OnResultListeners.Category, OnClickListener
             })
         }
 
-        loadContent(currentPage)
+
 
         return rootView
     }
 
     fun snackBar() {
-            Snackbar
-                .make(rootLayout, "Check your internet connection!", Snackbar.LENGTH_INDEFINITE)
-                .setAction(
-                    "try again"
-                ) {
-                    if (Connection().isOnline(App.applicationContext())) {
-                        currentPage++
-                        loadContent(currentPage)
-                        isLoading = false
-                    } else {
-                        snackBar()
-                    }
+        Snackbar
+            .make(rootLayout, "Check your internet connection!", Snackbar.LENGTH_INDEFINITE)
+            .setAction(
+                "try again"
+            ) {
+                if (Connection().isOnline(App.applicationContext())) {
+                    currentPage++
+                    loadContent(currentPage)
+                    isLoading = false
+                } else {
+                    snackBar()
                 }
-                .show()
-
-
+            }
+            .show()
 
 
     }
@@ -162,7 +164,7 @@ class FragmentCategory : Fragment(), OnResultListeners.Category, OnClickListener
     private fun loadContent(page: Int) {
         view?.progressbar?.visibility = View.VISIBLE
         GlobalScope.launch(IO) {
-            CategoryParser().parse(
+            Parser().parseCategory(
                 arguments?.getString(URL) + "?page=$page",
                 this@FragmentCategory
             )
@@ -177,33 +179,105 @@ class FragmentCategory : Fragment(), OnResultListeners.Category, OnClickListener
         isLoading = false
 
         GlobalScope.launch(Main) {
-            progressbar.visibility = View.GONE
+            if (progressbar != null) {
+                progressbar.visibility = View.GONE
+            }
             adapter.notifyItemInserted(adapter.itemCount)
 
 
         }
+        check()
 
 
     }
 
-    override fun click(data: String, view: View) {
-        if (Connection().isOnline(App.applicationContext()))
+    override fun click(data: String, view: View, title: String) {
+        if (Connection().isOnline(App.applicationContext())) {
             activity?.supportFragmentManager
                 ?.beginTransaction()
                 ?.setReorderingAllowed(true)
                 //   ?.hide(this)
                 ?.addSharedElement(view, view.transitionName)
                 // ?.setCustomAnimations(android.R.anim.fade_in, android.R.anim.fade_out)
-                ?.replace(R.id.container, FragmentArticle().newInstance(data, view.transitionName), FR_CATEGORY)
+                ?.replace(
+                    R.id.container,
+                    FragmentArticle().newInstance(data, view.transitionName, title),
+                    FR_CATEGORY
+                )
                 ?.addToBackStack(FR_CATEGORIES)
                 ?.commit()
-        else
+
+        } else {
             Toast.makeText(
                 App.applicationContext(),
                 "Check your internet connection!",
                 Toast.LENGTH_SHORT
             ).show()
+        }
+    }
 
+    override fun clickSave(item: DbModel) {
+        val db = Database(App.applicationContext())
+        db.insert(item)
+        db.close()
+    }
+
+
+    private fun check() {
+        for (i in 0 until contentList.size) {
+            for (j in i + 1 until contentList.size) {
+                if (contentList[i].url == contentList[j].url) {
+                    Log.e("---------","repeat detected at $i position ${contentList[i].url}")
+                }
+            }
+        }
+    }
+
+
+    override fun onResume() {
+        Log.e("live","onResume")
+        super.onResume()
+    }
+
+    override fun onAttach(context: Context) {
+        Log.e("live","onAttach")
+        loadContent(currentPage)
+        super.onAttach(context)
+    }
+
+    override fun onDestroy() {
+        Log.e("live","onDestroy")
+        super.onDestroy()
+    }
+
+    override fun onDetach() {
+        Log.e("live","onDetach")
+        super.onDetach()
+    }
+
+    override fun onStart() {
+        Log.e("live","onStart")
+        super.onStart()
+    }
+
+    override fun onStop() {
+        Log.e("live","onStop")
+        super.onStop()
+    }
+
+    override fun onDestroyView() {
+        Log.e("live","onDestroyView")
+        super.onDestroyView()
+    }
+
+    override fun onPause() {
+        Log.e("live","onPause")
+        super.onPause()
+    }
+
+    override fun onSaveInstanceState(outState: Bundle) {
+        Log.e("live","onSaveInstanceState")
+        super.onSaveInstanceState(outState)
     }
 
 

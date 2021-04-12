@@ -3,6 +3,7 @@ package com.example.nexusapp.constants
 const val BASE_URL = "https://www.nexusmods.com/"
 const val SECTION = "mods/"
 const val CATEGORIES = "categories/"
+const val TITLE = "TITLE"
 const val GAMES = "GAMES"
 const val VIEW_TRANSITION_NAME = "VIEW_TRANSITION_NAME"
 

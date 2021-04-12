@@ -1,6 +1,8 @@
 package com.example.nexusapp.listener
 
 import android.view.View
+import android.widget.TextView
+import com.example.nexusapp.models.DbModel
 
 
 class OnClickListeners {
@@ -14,7 +16,11 @@ class OnClickListeners {
     }
 
     interface OnContent{
-        fun click(url: String, view: View)
+        fun click(url: String, view: View, title: String)
+    }
+
+    interface SaveClick{
+        fun clickSave(item:DbModel)
     }
 
 

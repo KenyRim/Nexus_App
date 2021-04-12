@@ -1,19 +1,13 @@
-package com.example.nexusapp.adapter
+package com.example.nexusapp.adapters
 
-import android.util.Log
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 
-/**
- * Pagination class to add more items to the list when reach the last item.
- */
-abstract class PaginationScrollListener
-/**
- * Supporting only LinearLayoutManager for now.
- *
- * @param layoutManager
- */
-    (var layoutManager: LinearLayoutManager, val totalPages:Int) : RecyclerView.OnScrollListener() {
+
+abstract class PaginationScrollListener(
+    var layoutManager: LinearLayoutManager,
+    val totalPages: Int
+) : RecyclerView.OnScrollListener() {
 
     abstract fun isLastPage(): Boolean
 
@@ -25,8 +19,6 @@ abstract class PaginationScrollListener
         val visibleItemCount = layoutManager.childCount
         val totalItemCount = layoutManager.itemCount
 
-        Log.e("visible", "$totalItemCount  $totalPages")
-
         val firstVisibleItemPosition = layoutManager.findFirstVisibleItemPosition()
 
         if (!isLoading() && !isLastPage()) {
@@ -35,5 +27,6 @@ abstract class PaginationScrollListener
             }
         }
     }
+
     abstract fun loadMoreItems()
 }

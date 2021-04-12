@@ -1,31 +1,49 @@
 package com.example.nexusapp.fragments
 
+import android.annotation.SuppressLint
+import android.net.http.SslError
 import android.os.Build
 import android.os.Bundle
+import android.text.Html
 import android.transition.Fade
 import android.transition.TransitionInflater
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.webkit.SslErrorHandler
+import android.webkit.WebView
+import android.webkit.WebViewClient
+import android.widget.FrameLayout
+import android.widget.ImageView
 import androidx.core.view.doOnPreDraw
 import androidx.fragment.app.Fragment
+import androidx.viewpager2.widget.ViewPager2
+import com.bumptech.glide.Glide
+import com.example.nexusapp.App
 import com.example.nexusapp.R
-import com.example.nexusapp.constants.*
+import com.example.nexusapp.adapters.GalleryAdapter
+import com.example.nexusapp.constants.TITLE
+import com.example.nexusapp.constants.URL
 import com.example.nexusapp.listener.OnResultListeners
 import com.example.nexusapp.models.ArticleModel
-import com.example.nexusapp.parser.ArticleParser
-import kotlinx.android.synthetic.main.fragment_category.*
-import kotlinx.android.synthetic.main.fragment_category.view.*
+import com.example.nexusapp.parser.Parser
+import com.example.nexusapp.utils.SliderTransformer
+import com.google.android.material.tabs.TabLayoutMediator
+import kotlinx.android.synthetic.main.fragment_article.*
 import kotlinx.android.synthetic.main.titlebar.*
 import kotlinx.android.synthetic.main.titlebar.view.*
-import kotlinx.android.synthetic.main.titlebar.view.top_bar
-import kotlinx.coroutines.*
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Dispatchers.IO
+import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.launch
 import java.util.*
+import kotlin.collections.ArrayList
 
 
 class FragmentArticle : Fragment(), OnResultListeners.FullArticle {
+
+    private val imagesList:ArrayList<String> = ArrayList()
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
@@ -35,10 +53,11 @@ class FragmentArticle : Fragment(), OnResultListeners.FullArticle {
     }
 
 
-    fun newInstance(categoryUrl: String, viewTransitionName: String): FragmentArticle {
+    fun newInstance(categoryUrl: String, viewTransitionName: String, title: String): FragmentArticle {
         val args = Bundle()
         args.putString(URL, categoryUrl)
-        args.putString(VIEW_TRANSITION_NAME, viewTransitionName)
+        args.putString(TITLE, title)
+    //    args.putString(VIEW_TRANSITION_NAME, viewTransitionName)
         val fragment = FragmentArticle()
         fragment.arguments = args
         return fragment
@@ -66,10 +85,11 @@ class FragmentArticle : Fragment(), OnResultListeners.FullArticle {
     ): View? {
         val rootView = inflater.inflate(R.layout.fragment_article, container, false)
 
-        val name = arguments?.getString(VIEW_TRANSITION_NAME)
-        rootView.title_tv.text = name?.capitalize(Locale.getDefault())
-        rootView.top_bar.transitionName = name
-        rootView.back_btn_iv.setOnClickListener {
+        val name = arguments?.getString(TITLE)
+        val titleBar = rootView.top_bar
+        titleBar.title_tv.text = name?.capitalize(Locale.getDefault())
+        titleBar.top_bar.transitionName = name
+        titleBar.back_btn_iv.setOnClickListener {
             activity?.onBackPressed()
         }
 
@@ -77,11 +97,35 @@ class FragmentArticle : Fragment(), OnResultListeners.FullArticle {
         return rootView
     }
 
+    private fun iniPager(images: List<String>){
+        val pager: ViewPager2 = vp_article_images
+        val adapter = GalleryAdapter(images)
+        pager.setPageTransformer(SliderTransformer(3))
+        pager.adapter = adapter
+
+        TabLayoutMediator(page_indicator, pager)
+        { it, position ->
+            it.customView = createTabItemView(images[position])
+
+        }.attach()
+    }
+
+    private fun createTabItemView(imgUri: String): View? {
+        val imageView = ImageView(App.applicationContext())
+        val params = FrameLayout.LayoutParams(
+            ViewGroup.LayoutParams.WRAP_CONTENT,
+            ViewGroup.LayoutParams.WRAP_CONTENT
+        )
+        imageView.layoutParams = params
+        Glide.with(App.applicationContext()).load(imgUri).into(imageView)
+        return imageView
+    }
+
 
     private fun loadContent() {
         view?.progressbar?.visibility = View.VISIBLE
         GlobalScope.launch(IO) {
-            ArticleParser().parse(
+            Parser().parseArticles(
                 arguments?.getString(URL).toString(),
                 this@FragmentArticle
             )
@@ -89,10 +133,39 @@ class FragmentArticle : Fragment(), OnResultListeners.FullArticle {
     }
 
 
-    override fun getResult(data: ArticleModel) {
-      //  TODO("Not yet implemented")
+    @SuppressLint("SetJavaScriptEnabled")
+    override fun getResult(article: ArticleModel) {
+        imagesList.clear()
+        imagesList.addAll(article.images)
+        GlobalScope.launch(Dispatchers.Main) {
+            if (progressbar != null){
+                progressbar.visibility =  View.GONE
+            }
+            iniPager(imagesList)
 
-      //  Log.e("result",data.)
+
+            val webView: WebView = web_view
+            webView.settings.javaScriptEnabled = true
+            webView.webViewClient = SSLTolerentWebViewClient()
+            webView.settings.domStorageEnabled = true
+
+            webView.loadData(article.article, "text/html; charset=utf-8", "UTF-8")
+
+            article_title.text = arguments?.getString(TITLE)
+            article_about.text = Html.fromHtml(article.textAbout)
+           // web_view.loadData(article.article, "text/html; charset=utf-8", "UTF-8")
+
+        }
+
+        for(image in article.images) {
+            Log.e("result", image)
+        }
+    }
+
+    private class SSLTolerentWebViewClient : WebViewClient() {
+        override fun onReceivedSslError(view: WebView, handler: SslErrorHandler, error: SslError) {
+            handler.proceed()
+        }
     }
 
 
