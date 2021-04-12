@@ -1,5 +1,7 @@
 package com.example.nexusapp.adapters
 
+import android.graphics.Bitmap
+import android.graphics.drawable.Drawable
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -8,10 +10,14 @@ import android.widget.ImageView
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
-import com.bumptech.glide.request.RequestOptions
+import com.bumptech.glide.load.engine.DiskCacheStrategy
+import com.bumptech.glide.request.target.CustomTarget
+import com.bumptech.glide.request.transition.Transition
 import com.example.nexusapp.R
+import com.example.nexusapp.constants.EMPTY_STRING
 import com.example.nexusapp.listener.OnClickListeners
 import com.example.nexusapp.models.CategoryModel
+
 
 class CategoryAdapter(
     private val category: List<CategoryModel>,
@@ -43,23 +49,40 @@ class CategoryAdapter(
         holder.imageView.transitionName = item.url
 
         Glide.with(holder.imageView.context)
-            .load(item.image).apply(
-                RequestOptions()
-                    .placeholder(R.drawable.ic_vault_tec_corporation_logo)
-                    .error(R.drawable.ic_vault_tec_corporation_logo)
-                    .dontAnimate()
-                    .skipMemoryCache(true)
+            .asBitmap()
+            .load(
+                if (item.image.toString()
+                        .contains("svg") || item.image == null || item.image == EMPTY_STRING
+                ) "https://www.nexusmods.com/assets/images/default/tile_empty.png"  else item.image
             )
+            .diskCacheStrategy(DiskCacheStrategy.ALL)
+            .into(object : CustomTarget<Bitmap?>() {
+                override fun onResourceReady(
+                    resource: Bitmap,
+                    transition: Transition<in Bitmap?>?
+                ) {
+                    holder.imageView.setImageBitmap(resource)
+                }
 
-            .into(holder.imageView)
+                override fun onLoadCleared(placeholder: Drawable?) {}
+            })
 
         setAnimation(holder.itemView)
         holder.itemView.setOnClickListener {
-            onItemClick.click(category[position].url,holder.imageView,category[position].title)
+            onItemClick.click(category[position].url, holder.imageView, category[position].title)
         }
 
-        holder.ivSaveBtn.setOnClickListener{
-            onSaveClick.clickSave(CategoryModel(0,item.image,item.title,item.description ,item.url,item.pagesCnt))
+        holder.ivSaveBtn.setOnClickListener {
+            onSaveClick.clickSave(
+                CategoryModel(
+                    0,
+                    item.image,
+                    item.title,
+                    item.description,
+                    item.url,
+                    item.pagesCnt
+                )
+            )
         }
 
     }

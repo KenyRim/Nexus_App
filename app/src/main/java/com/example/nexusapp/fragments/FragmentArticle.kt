@@ -1,6 +1,9 @@
 package com.example.nexusapp.fragments
 
 import android.annotation.SuppressLint
+import android.graphics.Bitmap
+import android.graphics.BitmapFactory
+import android.graphics.drawable.Drawable
 import android.net.http.SslError
 import android.os.Build
 import android.os.Bundle
@@ -12,17 +15,26 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.webkit.SslErrorHandler
+import android.webkit.WebSettings
 import android.webkit.WebView
 import android.webkit.WebViewClient
 import android.widget.FrameLayout
 import android.widget.ImageView
+import android.widget.TextView
 import androidx.core.view.doOnPreDraw
 import androidx.fragment.app.Fragment
 import androidx.viewpager2.widget.ViewPager2
 import com.bumptech.glide.Glide
+import com.bumptech.glide.load.DecodeFormat
+import com.bumptech.glide.load.engine.DiskCacheStrategy
+import com.bumptech.glide.request.RequestOptions
+import com.bumptech.glide.request.target.CustomTarget
+import com.bumptech.glide.request.target.Target.SIZE_ORIGINAL
+import com.bumptech.glide.request.transition.Transition
 import com.example.nexusapp.App
 import com.example.nexusapp.R
 import com.example.nexusapp.adapters.GalleryAdapter
+import com.example.nexusapp.constants.EMPTY_STRING
 import com.example.nexusapp.constants.TITLE
 import com.example.nexusapp.constants.URL
 import com.example.nexusapp.listener.OnResultListeners
@@ -37,6 +49,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Dispatchers.IO
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
+import org.jsoup.Jsoup
 import java.util.*
 import kotlin.collections.ArrayList
 
@@ -100,25 +113,50 @@ class FragmentArticle : Fragment(), OnResultListeners.FullArticle {
     private fun iniPager(images: List<String>){
         val pager: ViewPager2 = vp_article_images
         val adapter = GalleryAdapter(images)
-        pager.setPageTransformer(SliderTransformer(3))
+        pager.offscreenPageLimit= 2
+        pager.setPageTransformer(SliderTransformer(2))
         pager.adapter = adapter
 
         TabLayoutMediator(page_indicator, pager)
         { it, position ->
-            it.customView = createTabItemView(images[position])
+            it.customView = createTabItemView(images[position],position)
 
         }.attach()
     }
 
-    private fun createTabItemView(imgUri: String): View? {
-        val imageView = ImageView(App.applicationContext())
+    private fun createTabItemView(imgUri: String,position:Int): View {
+        val textView = TextView(App.applicationContext())
         val params = FrameLayout.LayoutParams(
             ViewGroup.LayoutParams.WRAP_CONTENT,
             ViewGroup.LayoutParams.WRAP_CONTENT
         )
-        imageView.layoutParams = params
-        Glide.with(App.applicationContext()).load(imgUri).into(imageView)
-        return imageView
+        textView.layoutParams = params
+        textView.text = position.toString()
+//        Glide.with(App.applicationContext()).load(imgUri).into(imageView)
+
+//
+//
+//        Glide.with(App.applicationContext())
+//            .asBitmap()
+//            .load(
+//                if (imgUri
+//                        .contains("svg") || imgUri == EMPTY_STRING
+//                ) "https://www.nexusmods.com/assets/images/default/tile_empty.png"  else imgUri
+//            )
+//            .diskCacheStrategy(DiskCacheStrategy.ALL)
+//            .into(object : CustomTarget<Bitmap?>() {
+//                override fun onResourceReady(
+//                    resource: Bitmap,
+//                    transition: Transition<in Bitmap?>?
+//                ) {
+//
+//                    imageView.setImageBitmap(resource)
+//                }
+//
+//                override fun onLoadCleared(placeholder: Drawable?) {}
+//            })
+
+        return textView
     }
 
 
@@ -144,22 +182,37 @@ class FragmentArticle : Fragment(), OnResultListeners.FullArticle {
             iniPager(imagesList)
 
 
+
+
             val webView: WebView = web_view
             webView.settings.javaScriptEnabled = true
             webView.webViewClient = SSLTolerentWebViewClient()
             webView.settings.domStorageEnabled = true
+            webView.setLayerType(View.LAYER_TYPE_HARDWARE, null)
 
-            webView.loadData(article.article, "text/html; charset=utf-8", "UTF-8")
+            webView.settings.loadWithOverviewMode = true
+            webView.settings.cacheMode = WebSettings.LOAD_CACHE_ELSE_NETWORK
+            webView.settings.useWideViewPort = true
+            webView.settings.layoutAlgorithm = WebSettings.LayoutAlgorithm.SINGLE_COLUMN
+
+            webView.loadData(htmlOptimize(article.article), "text/html; charset=utf-8", "UTF-8")
 
             article_title.text = arguments?.getString(TITLE)
             article_about.text = Html.fromHtml(article.textAbout)
-           // web_view.loadData(article.article, "text/html; charset=utf-8", "UTF-8")
 
         }
 
         for(image in article.images) {
             Log.e("result", image)
         }
+    }
+
+    private fun htmlOptimize(htmlString: String):String{
+        val doc = Jsoup.parse(htmlString)
+        doc.select("img").attr("width", "100%") // find all images and set with to 100%
+        doc.select("figure").attr("style", "width: 80%") // find all figures and set with to 80%
+        doc.select("iframe").attr("style", "width: 100%") // find all iframes and set with to 100%
+        return doc.html()
     }
 
     private class SSLTolerentWebViewClient : WebViewClient() {

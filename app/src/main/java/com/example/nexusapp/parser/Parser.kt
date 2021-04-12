@@ -12,8 +12,8 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.async
 import org.jsoup.HttpStatusException
 import org.jsoup.Jsoup
-import org.jsoup.nodes.Element
 import org.jsoup.select.Elements
+import java.util.Collections.sort
 
 class Parser {
 
@@ -88,13 +88,22 @@ class Parser {
         listener: FragmentCategory
     ): List<CategoryModel> {
         val data: ArrayList<CategoryModel> = ArrayList()
+        val partOfPath = "div.mod-tile-left > div.tile-desc.motm-tile > div.tile-content"
 
         val parse: Deferred<List<CategoryModel>> = CoroutineScope(Dispatchers.IO).async {
             val doc = Jsoup.connect(url).get()
             val metaElements: Elements = doc.select("#mod-list > ul > li")
             val pages: Elements =
                 doc.select("#mod-list > div.pagenav.clearfix.head-nav > div > ul > li")
-            val partOfPath = "div.mod-tile-left > div.tile-desc.motm-tile > div.tile-content"
+
+            val pagesList: ArrayList<String> = ArrayList()
+
+            for (page in pages) {
+                pagesList.add(page.text())
+            }
+
+            sort(pagesList)
+
             for (element in metaElements) {
                 data.add(
                     CategoryModel(
@@ -103,13 +112,12 @@ class Parser {
                         element.select("p.tile-name > a").first().text(),
                         element.select("$partOfPath > p.desc").text(),
                         element.select("$partOfPath > p.tile-name > a").attr("href"),
-                        if (pages.size > 1) pages[pages.size - 2].text().toInt() else 1
+                        pagesList.last().toInt()
                     )
                 )
             }
             data
         }
-
 
         parse.await()
         listener.getResult(data)

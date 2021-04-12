@@ -119,11 +119,9 @@ class FragmentCategory : Fragment(), OnResultListeners.Category, OnClickListener
                 }
 
                 override fun loadMoreItems() {
-                    if (currentPage <= pagesCount) {
+                    if (currentPage <= pagesCount && pagesCount > 0) {
                         isLoading = true
                         if (Connection().isOnline(App.applicationContext())) {
-
-                            currentPage++
                             loadContent(currentPage)
                         } else {
                             snackBar()
@@ -147,7 +145,6 @@ class FragmentCategory : Fragment(), OnResultListeners.Category, OnClickListener
                 "try again"
             ) {
                 if (Connection().isOnline(App.applicationContext())) {
-                    currentPage++
                     loadContent(currentPage)
                     isLoading = false
                 } else {
@@ -161,6 +158,7 @@ class FragmentCategory : Fragment(), OnResultListeners.Category, OnClickListener
 
 
     private fun loadContent(page: Int) {
+        Log.e("page","page=$page")
         view?.progressbar?.visibility = View.VISIBLE
         GlobalScope.launch(IO) {
             Parser().parseCategory(
@@ -168,12 +166,14 @@ class FragmentCategory : Fragment(), OnResultListeners.Category, OnClickListener
                 this@FragmentCategory
             )
         }
+        currentPage++
     }
 
     override fun getResult(data: List<CategoryModel>) {
         contentList.addAll(data)
         if (data.isNotEmpty()) {
             pagesCount = data.first().pagesCnt
+            Log.e("page","page_cnt= $pagesCount")
         }
         isLoading = false
 
