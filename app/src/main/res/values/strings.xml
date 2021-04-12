@@ -1,3 +1,4 @@
 <resources>
     <string name="app_name">Nexus App</string>
+    <string name="internet">Check your internet connection!</string>
 </resources>

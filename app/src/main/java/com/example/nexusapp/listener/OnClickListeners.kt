@@ -1,26 +1,25 @@
 package com.example.nexusapp.listener
 
 import android.view.View
-import android.widget.TextView
-import com.example.nexusapp.models.DbModel
+import com.example.nexusapp.models.CategoryModel
 
 
 class OnClickListeners {
 
-    interface OnCategory{
+    interface OnCategory {
         fun click(url: String, view: View)
     }
 
-    interface OnGame{
+    interface OnGame {
         fun click(gameName: String, view: View)
     }
 
-    interface OnContent{
+    interface OnContent {
         fun click(url: String, view: View, title: String)
     }
 
-    interface SaveClick{
-        fun clickSave(item:DbModel)
+    interface SaveClick {
+        fun clickSave(item: CategoryModel)
     }
 
 

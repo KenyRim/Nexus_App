@@ -98,6 +98,7 @@ class Parser {
             for (element in metaElements) {
                 data.add(
                     CategoryModel(
+                        0,
                         element.select("div.mod-tile-left > a > figure > div > img").attr("src"),
                         element.select("p.tile-name > a").first().text(),
                         element.select("$partOfPath > p.desc").text(),

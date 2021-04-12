@@ -5,7 +5,7 @@ import android.content.Context
 import android.database.Cursor
 import android.database.sqlite.SQLiteDatabase
 import android.database.sqlite.SQLiteOpenHelper
-import com.example.nexusapp.models.DbModel
+import com.example.nexusapp.models.CategoryModel
 
 class Database(context: Context) {
 
@@ -35,7 +35,7 @@ class Database(context: Context) {
     private lateinit var image: String
     private lateinit var description: String
 
-    fun insert(model: DbModel): Long {
+    fun insert(model: CategoryModel): Long {
         val cv = ContentValues()
         cv.put(COL_TIT, model.title)
         cv.put(COL_URL, model.url)
@@ -53,9 +53,9 @@ class Database(context: Context) {
         context.deleteDatabase(DATABASE_NAME)
     }
 
-    fun selectAll(): ArrayList<DbModel> {
+    fun selectAll(): ArrayList<CategoryModel> {
         val cursor: Cursor = database.query(TABLE_NAME, null, null, null, null, null, ID)
-        val arr: ArrayList<DbModel> = ArrayList()
+        val arr: ArrayList<CategoryModel> = ArrayList()
         cursor.moveToFirst()
         if (!cursor.isAfterLast) {
             do {
@@ -64,15 +64,7 @@ class Database(context: Context) {
                 url = cursor.getString(NUM_URL)
                 image = cursor.getString(NUM_IMG)
                 description = cursor.getString(NUM_DES)
-                arr.add(
-                    DbModel(
-                        id,
-                        title,
-                        url,
-                        image,
-                        description
-                    )
-                )
+                arr.add(CategoryModel(0, image, title, description, url, 0))
             } while (cursor.moveToNext())
         }
         cursor.close()

@@ -16,27 +16,20 @@ import androidx.recyclerview.widget.RecyclerView
 import com.example.nexusapp.App
 import com.example.nexusapp.R
 import com.example.nexusapp.adapters.CategoryAdapter
-import com.example.nexusapp.adapters.PaginationScrollListener
 import com.example.nexusapp.constants.*
+import com.example.nexusapp.database.Database
 import com.example.nexusapp.listener.OnClickListeners
-import com.example.nexusapp.listener.OnResultListeners
 import com.example.nexusapp.models.CategoryModel
-import com.example.nexusapp.parser.Parser
 import com.example.nexusapp.utils.Connection
 import com.google.android.material.snackbar.Snackbar
 import kotlinx.android.synthetic.main.fragment_category.view.*
-import kotlinx.android.synthetic.main.titlebar.progressbar
-import kotlinx.android.synthetic.main.titlebar.view.top_bar
-import kotlinx.android.synthetic.main.titlebar.view.title_tv
 import kotlinx.android.synthetic.main.titlebar.view.*
 import kotlinx.coroutines.*
-import kotlinx.coroutines.Dispatchers.IO
-import kotlinx.coroutines.Dispatchers.Main
 import java.util.*
 import kotlin.collections.ArrayList
 
 
-class FragmentDatabase : Fragment(), OnClickListeners.OnContent {
+class FragmentDatabase : Fragment(), OnClickListeners.OnContent, OnClickListeners.SaveClick {
 
     private var contentList: ArrayList<CategoryModel> = ArrayList()
     private lateinit var adapter: CategoryAdapter
@@ -93,6 +86,7 @@ class FragmentDatabase : Fragment(), OnClickListeners.OnContent {
         rootView.back_btn_iv.setOnClickListener {
             activity?.onBackPressed()
         }
+        rootView?.progressbar?.visibility = View.GONE
 
         lm = LinearLayoutManager(context, LinearLayoutManager.VERTICAL, false)
         rvCategory = rootView.rv_category
@@ -100,7 +94,11 @@ class FragmentDatabase : Fragment(), OnClickListeners.OnContent {
         rvCategory.layoutManager = lm
 
         rvCategory.post {
-            adapter = CategoryAdapter(contentList, this@FragmentDatabase)
+            adapter = CategoryAdapter(
+                Database(App.applicationContext()).selectAll(),
+                this@FragmentDatabase,
+                this@FragmentDatabase
+            )
             rvCategory.adapter = adapter
 
         }
@@ -149,6 +147,10 @@ class FragmentDatabase : Fragment(), OnClickListeners.OnContent {
                 Toast.LENGTH_SHORT
             ).show()
 
+    }
+
+    override fun clickSave(item: CategoryModel) {
+        // TODO("Not yet implemented")
     }
 
 

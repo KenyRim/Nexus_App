@@ -15,7 +15,8 @@ import com.example.nexusapp.models.CategoryModel
 
 class CategoryAdapter(
     private val category: List<CategoryModel>,
-    private val onItemClick: OnClickListeners.OnContent
+    private val onItemClick: OnClickListeners.OnContent,
+    private val onSaveClick: OnClickListeners.SaveClick
 ) :
     RecyclerView.Adapter<CategoryAdapter.MyViewHolder>() {
 
@@ -30,6 +31,7 @@ class CategoryAdapter(
         var titleTv: TextView = itemView.findViewById(R.id.item_title_tv)
         var descriptionTv: TextView = itemView.findViewById(R.id.item_description_tv)
         var imageView: ImageView = itemView.findViewById(R.id.item_category_iv)
+        var ivSaveBtn: ImageView = itemView.findViewById(R.id.save_btn_iv)
 
 
     }
@@ -54,6 +56,10 @@ class CategoryAdapter(
         setAnimation(holder.itemView)
         holder.itemView.setOnClickListener {
             onItemClick.click(category[position].url,holder.imageView,category[position].title)
+        }
+
+        holder.ivSaveBtn.setOnClickListener{
+            onSaveClick.clickSave(CategoryModel(0,item.image,item.title,item.description ,item.url,item.pagesCnt))
         }
 
     }

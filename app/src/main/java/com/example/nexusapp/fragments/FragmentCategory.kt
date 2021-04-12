@@ -24,16 +24,14 @@ import com.example.nexusapp.database.Database
 import com.example.nexusapp.listener.OnClickListeners
 import com.example.nexusapp.listener.OnResultListeners
 import com.example.nexusapp.models.CategoryModel
-import com.example.nexusapp.models.DbModel
 import com.example.nexusapp.parser.Parser
 import com.example.nexusapp.utils.Connection
 import com.google.android.material.snackbar.Snackbar
 import kotlinx.android.synthetic.main.fragment_category.view.*
 import kotlinx.android.synthetic.main.item_category.*
-import kotlinx.android.synthetic.main.titlebar.progressbar
-import kotlinx.android.synthetic.main.titlebar.view.top_bar
-import kotlinx.android.synthetic.main.titlebar.view.title_tv
+import kotlinx.android.synthetic.main.titlebar.*
 import kotlinx.android.synthetic.main.titlebar.view.*
+import kotlinx.android.synthetic.main.titlebar.view.top_bar
 import kotlinx.coroutines.*
 import kotlinx.coroutines.Dispatchers.IO
 import kotlinx.coroutines.Dispatchers.Main
@@ -100,6 +98,7 @@ class FragmentCategory : Fragment(), OnResultListeners.Category, OnClickListener
         rootView.back_btn_iv.setOnClickListener {
             activity?.onBackPressed()
         }
+
         rootView?.progressbar?.visibility = View.GONE
 
         lm = LinearLayoutManager(context, LinearLayoutManager.VERTICAL, false)
@@ -108,7 +107,7 @@ class FragmentCategory : Fragment(), OnResultListeners.Category, OnClickListener
         rvCategory.layoutManager = lm
 
         rvCategory.post {
-            adapter = CategoryAdapter(contentList, this@FragmentCategory)
+            adapter = CategoryAdapter(contentList, this@FragmentCategory, this@FragmentCategory)
             rvCategory.adapter = adapter
             rvCategory.addOnScrollListener(object : PaginationScrollListener(lm, pagesCount) {
                 override fun isLastPage(): Boolean {
@@ -143,7 +142,7 @@ class FragmentCategory : Fragment(), OnResultListeners.Category, OnClickListener
 
     fun snackBar() {
         Snackbar
-            .make(rootLayout, "Check your internet connection!", Snackbar.LENGTH_INDEFINITE)
+            .make(rootLayout, R.string.internet, Snackbar.LENGTH_INDEFINITE)
             .setAction(
                 "try again"
             ) {
@@ -210,13 +209,14 @@ class FragmentCategory : Fragment(), OnResultListeners.Category, OnClickListener
         } else {
             Toast.makeText(
                 App.applicationContext(),
-                "Check your internet connection!",
+                getString(R.string.internet),
                 Toast.LENGTH_SHORT
             ).show()
         }
     }
 
-    override fun clickSave(item: DbModel) {
+    override fun clickSave(item: CategoryModel) {
+        Log.e("kenyrim", "save clicked")
         val db = Database(App.applicationContext())
         db.insert(item)
         db.close()
@@ -227,60 +227,17 @@ class FragmentCategory : Fragment(), OnResultListeners.Category, OnClickListener
         for (i in 0 until contentList.size) {
             for (j in i + 1 until contentList.size) {
                 if (contentList[i].url == contentList[j].url) {
-                    Log.e("---------","repeat detected at $i position ${contentList[i].url}")
+                    Log.e("---------", "repeat detected at $i position ${contentList[i].url}")
                 }
             }
         }
     }
 
-
-    override fun onResume() {
-        Log.e("live","onResume")
-        super.onResume()
-    }
-
     override fun onAttach(context: Context) {
-        Log.e("live","onAttach")
+        Log.e("live", "onAttach")
         loadContent(currentPage)
         super.onAttach(context)
     }
-
-    override fun onDestroy() {
-        Log.e("live","onDestroy")
-        super.onDestroy()
-    }
-
-    override fun onDetach() {
-        Log.e("live","onDetach")
-        super.onDetach()
-    }
-
-    override fun onStart() {
-        Log.e("live","onStart")
-        super.onStart()
-    }
-
-    override fun onStop() {
-        Log.e("live","onStop")
-        super.onStop()
-    }
-
-    override fun onDestroyView() {
-        Log.e("live","onDestroyView")
-        super.onDestroyView()
-    }
-
-    override fun onPause() {
-        Log.e("live","onPause")
-        super.onPause()
-    }
-
-    override fun onSaveInstanceState(outState: Bundle) {
-        Log.e("live","onSaveInstanceState")
-        super.onSaveInstanceState(outState)
-    }
-
-
 
 }
 
