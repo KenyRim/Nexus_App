@@ -3,6 +3,7 @@ package com.example.nexusapp.database
 import android.content.ContentValues
 import android.content.Context
 import android.database.Cursor
+import android.database.SQLException
 import android.database.sqlite.SQLiteDatabase
 import android.database.sqlite.SQLiteOpenHelper
 import com.example.nexusapp.models.CategoryModel
@@ -44,8 +45,18 @@ class Database(context: Context) {
         return database.insert(TABLE_NAME, null, cv)
     }
 
-    fun delete(id: Long) {
-        database.delete(TABLE_NAME, "$ID = ?", arrayOf(id.toString()))
+//    fun delete(queryUrl: String) {
+//        val openHelper = ResultOpenHelper(context)
+//        database = openHelper.writableDatabase
+//        database.delete(TABLE_NAME, "\$url=?", arrayOf(queryUrl))
+//        database.close()
+//    }
+
+
+    @Throws(SQLException::class)
+    fun delete(string: String) {
+        val whereArgs = arrayOf(string)
+        database.delete(TABLE_NAME, "$COL_URL = ?", whereArgs)
     }
 
     fun deleteAll() {

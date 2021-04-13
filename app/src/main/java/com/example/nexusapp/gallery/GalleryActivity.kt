@@ -1,12 +1,42 @@
 package com.example.nexusapp.gallery
 
 import android.os.Bundle
-import android.os.PersistableBundle
+import android.util.Log
 import androidx.appcompat.app.AppCompatActivity
+import androidx.recyclerview.widget.OrientationHelper
+import androidx.recyclerview.widget.StaggeredGridLayoutManager
+import com.example.nexusapp.R
+import com.example.nexusapp.adapters.GalleryAdapter
+import com.example.nexusapp.constants.IMAGES
+import kotlinx.android.synthetic.main.activity_gallery.*
+
 
 class GalleryActivity: AppCompatActivity() {
 
-    override fun onCreate(savedInstanceState: Bundle?, persistentState: PersistableBundle?) {
-        super.onCreate(savedInstanceState, persistentState)
+
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        setContentView(R.layout.activity_gallery)
+
+        val manager = StaggeredGridLayoutManager(2, StaggeredGridLayoutManager.VERTICAL)
+        manager.gapStrategy = StaggeredGridLayoutManager.GAP_HANDLING_MOVE_ITEMS_BETWEEN_SPANS
+
+        rv_all_images.layoutManager = manager
+        back_btn_ib.setOnClickListener{
+            onBackPressed()
+        }
+
+        val images = intent.getStringArrayListExtra(IMAGES)
+        rv_all_images.adapter = GalleryAdapter(images as ArrayList)
+
+        if (!images.isNullOrEmpty()) {
+            for (item in images) {
+
+            Log.e("images-----", "images $item")
+            }
+        }
+
     }
+
+
 }

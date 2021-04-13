@@ -16,6 +16,7 @@ import androidx.recyclerview.widget.RecyclerView
 import com.example.nexusapp.App
 import com.example.nexusapp.R
 import com.example.nexusapp.adapters.CategoryAdapter
+import com.example.nexusapp.adapters.DatabaseAdapter
 import com.example.nexusapp.constants.*
 import com.example.nexusapp.database.Database
 import com.example.nexusapp.listener.OnClickListeners
@@ -29,10 +30,10 @@ import java.util.*
 import kotlin.collections.ArrayList
 
 
-class FragmentDatabase : Fragment(), OnClickListeners.OnContent, OnClickListeners.SaveClick {
+class FragmentDatabase : Fragment(), OnClickListeners.OnContent, OnClickListeners.DeleteClick {
 
     private var contentList: ArrayList<CategoryModel> = ArrayList()
-    private lateinit var adapter: CategoryAdapter
+    private lateinit var adapter: DatabaseAdapter
     private lateinit var rvCategory: RecyclerView
     private lateinit var rootLayout: ConstraintLayout
 
@@ -94,7 +95,7 @@ class FragmentDatabase : Fragment(), OnClickListeners.OnContent, OnClickListener
         rvCategory.layoutManager = lm
 
         rvCategory.post {
-            adapter = CategoryAdapter(
+            adapter = DatabaseAdapter(
                 Database(App.applicationContext()).selectAll(),
                 this@FragmentDatabase,
                 this@FragmentDatabase
@@ -149,8 +150,14 @@ class FragmentDatabase : Fragment(), OnClickListeners.OnContent, OnClickListener
 
     }
 
-    override fun clickSave(item: CategoryModel) {
-        // TODO("Not yet implemented")
+    override fun deleteClick(position: Int, url: String) {
+        val db = Database(App.applicationContext())
+        db.open(this@FragmentDatabase.context)
+        db.delete(url)
+        db.close()
+
+        adapter.notifyItemRemoved(position)
+        Toast.makeText(App.applicationContext(),"Deleted",Toast.LENGTH_SHORT).show()
     }
 
 

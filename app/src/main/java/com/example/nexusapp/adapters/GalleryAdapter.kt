@@ -1,48 +1,98 @@
 package com.example.nexusapp.adapters
 
+import android.graphics.Bitmap
 import android.graphics.drawable.Drawable
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.view.animation.AlphaAnimation
+import android.view.animation.Animation
+import android.view.animation.ScaleAnimation
 import android.widget.ImageView
+import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
+import androidx.recyclerview.widget.StaggeredGridLayoutManager
 import com.bumptech.glide.Glide
+import com.bumptech.glide.load.engine.DiskCacheStrategy
 import com.bumptech.glide.request.target.CustomTarget
 import com.bumptech.glide.request.transition.Transition
 import com.example.nexusapp.R
+import com.example.nexusapp.constants.EMPTY_STRING
+import com.example.nexusapp.listener.OnClickListeners
+import com.example.nexusapp.models.CategoryModel
 
 
-class GalleryAdapter(private val res: List<String>) :
-    RecyclerView.Adapter<GalleryAdapter.PagerVH>() {
+class GalleryAdapter(
+    private val images: List<String>
+) :
+    RecyclerView.Adapter<GalleryAdapter.MyViewHolder>() {
 
-    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): PagerVH =
-        PagerVH(LayoutInflater.from(parent.context).inflate(R.layout.item_image, parent, false))
+    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): MyViewHolder {
+        val itemView =
+            LayoutInflater.from(parent.context)
+                .inflate(R.layout.item_gallery, parent, false)
+        return MyViewHolder(itemView)
+    }
 
-    override fun getItemCount(): Int = res.size
+    class MyViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
+        var imageView: ImageView = itemView.findViewById(R.id.item_image)
 
-    class PagerVH(itemView: View) : RecyclerView.ViewHolder(itemView) {
-        val image: ImageView = itemView.findViewById(R.id.item_image)
+        fun bind(image: String){
+            Glide.with(imageView.context)
+                .asBitmap()
+                .load(
+                    if (image.contains("svg") || image == EMPTY_STRING
+                    ) "https://www.nexusmods.com/assets/images/default/tile_empty.png"  else image
+                )
+                .into(object : CustomTarget<Bitmap?>() {
+                    override fun onResourceReady(
+                        resource: Bitmap,
+                        transition: Transition<in Bitmap?>?
+                    ) {
+                        imageView.setImageBitmap(resource)
+                    }
+
+                    override fun onLoadCleared(placeholder: Drawable?) {}
+                })
+
+
+            itemView.setOnClickListener {
+                //   onItemClick.click(category[position].url, holder.imageView, category[position].title)
+            }
+
+            imageView.setOnClickListener {
+
+            }
+
+
+        }
+    }
+
+    override fun onBindViewHolder(holder: MyViewHolder, position: Int) {
+        val item = images[position].replace("/thumbnails","")
+        holder.bind(item)
+        val layoutParams = holder.itemView.layoutParams as StaggeredGridLayoutManager.LayoutParams
+        layoutParams.isFullSpan = true
+
+        setAnimation(holder.itemView)
 
     }
 
-    override fun onBindViewHolder(holder: PagerVH, position: Int) {
-
-        Glide.with(holder.image.context)
-            .load(res[position])
-            .thumbnail(0.1f)
-            .into(object : CustomTarget<Drawable?>() {
-                override fun onResourceReady(
-                    resource: Drawable,
-                    transition: Transition<in Drawable?>?
-                ) {
-                    holder.image
-                }
-
-                override fun onLoadCleared(placeholder: Drawable?) {}
-            })
-
-        Log.e("image tumb", res[position])
-
+    private fun setAnimation(view: View) {
+        val anim = ScaleAnimation(
+            0.0f,
+            1.0f,
+            0.0f,
+            1.0f,
+            Animation.RELATIVE_TO_PARENT,
+            0.5f,
+            Animation.RELATIVE_TO_PARENT,
+            0.5f
+        )
+        anim.duration = 300
+        view.startAnimation(anim)
     }
+
+
+    override fun getItemCount() = images.size
 }

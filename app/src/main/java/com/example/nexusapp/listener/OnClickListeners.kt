@@ -22,5 +22,13 @@ class OnClickListeners {
         fun clickSave(item: CategoryModel)
     }
 
+    interface DeleteClick {
+        fun deleteClick(position:Int,url:String)
+    }
+
+    interface OnImageClick {
+        fun click(imagesList: List<String>)
+    }
+
 
 }

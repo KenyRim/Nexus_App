@@ -9,6 +9,7 @@ import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.ProgressBar
 import android.widget.Toast
 import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.core.view.doOnPreDraw
@@ -46,6 +47,7 @@ class FragmentCategory : Fragment(), OnResultListeners.Category, OnClickListener
     private lateinit var adapter: CategoryAdapter
     private lateinit var rvCategory: RecyclerView
     private lateinit var rootLayout: ConstraintLayout
+    private lateinit var progressBar: ProgressBar
 
     private var currentPage = 1
     private var isLastPage: Boolean = false
@@ -85,6 +87,12 @@ class FragmentCategory : Fragment(), OnResultListeners.Category, OnClickListener
 
     }
 
+    override fun onAttach(context: Context) {
+        Log.e("live", "onAttach")
+        loadContent(currentPage)
+        super.onAttach(context)
+    }
+
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
@@ -99,7 +107,8 @@ class FragmentCategory : Fragment(), OnResultListeners.Category, OnClickListener
             activity?.onBackPressed()
         }
 
-        rootView?.progressbar?.visibility = View.GONE
+
+        progressBar = rootView.findViewById(R.id.progressbar)
 
         lm = LinearLayoutManager(context, LinearLayoutManager.VERTICAL, false)
         rvCategory = rootView.rv_category
@@ -108,6 +117,9 @@ class FragmentCategory : Fragment(), OnResultListeners.Category, OnClickListener
 
         rvCategory.post {
             adapter = CategoryAdapter(contentList, this@FragmentCategory, this@FragmentCategory)
+            if (adapter.itemCount > 0) {
+                progressBar.visibility = View.GONE
+            }
             rvCategory.adapter = adapter
             rvCategory.addOnScrollListener(object : PaginationScrollListener(lm, pagesCount) {
                 override fun isLastPage(): Boolean {
@@ -122,6 +134,7 @@ class FragmentCategory : Fragment(), OnResultListeners.Category, OnClickListener
                     if (currentPage <= pagesCount && pagesCount > 0) {
                         isLoading = true
                         if (Connection().isOnline(App.applicationContext())) {
+                            progressBar.visibility = View.VISIBLE
                             loadContent(currentPage)
                         } else {
                             snackBar()
@@ -158,8 +171,7 @@ class FragmentCategory : Fragment(), OnResultListeners.Category, OnClickListener
 
 
     private fun loadContent(page: Int) {
-        Log.e("page","page=$page")
-        view?.progressbar?.visibility = View.VISIBLE
+        Log.e("page", "page=$page")
         GlobalScope.launch(IO) {
             Parser().parseCategory(
                 arguments?.getString(URL) + "?page=$page",
@@ -173,14 +185,13 @@ class FragmentCategory : Fragment(), OnResultListeners.Category, OnClickListener
         contentList.addAll(data)
         if (data.isNotEmpty()) {
             pagesCount = data.first().pagesCnt
-            Log.e("page","page_cnt= $pagesCount")
+            Log.e("page", "page_cnt= $pagesCount")
         }
         isLoading = false
 
         GlobalScope.launch(Main) {
-            if (progressbar != null) {
-                progressbar.visibility = View.GONE
-            }
+
+            progressBar.visibility = View.GONE
             adapter.notifyItemInserted(adapter.itemCount)
 
 
@@ -220,6 +231,7 @@ class FragmentCategory : Fragment(), OnResultListeners.Category, OnClickListener
         val db = Database(App.applicationContext())
         db.insert(item)
         db.close()
+        Toast.makeText(App.applicationContext(),"Saved",Toast.LENGTH_SHORT).show()
     }
 
 
@@ -233,11 +245,7 @@ class FragmentCategory : Fragment(), OnResultListeners.Category, OnClickListener
         }
     }
 
-    override fun onAttach(context: Context) {
-        Log.e("live", "onAttach")
-        loadContent(currentPage)
-        super.onAttach(context)
-    }
+
 
 }
 

@@ -1,9 +1,7 @@
 package com.example.nexusapp.fragments
 
 import android.annotation.SuppressLint
-import android.graphics.Bitmap
-import android.graphics.BitmapFactory
-import android.graphics.drawable.Drawable
+import android.content.Intent
 import android.net.http.SslError
 import android.os.Build
 import android.os.Bundle
@@ -19,24 +17,18 @@ import android.webkit.WebSettings
 import android.webkit.WebView
 import android.webkit.WebViewClient
 import android.widget.FrameLayout
-import android.widget.ImageView
 import android.widget.TextView
 import androidx.core.view.doOnPreDraw
 import androidx.fragment.app.Fragment
 import androidx.viewpager2.widget.ViewPager2
-import com.bumptech.glide.Glide
-import com.bumptech.glide.load.DecodeFormat
-import com.bumptech.glide.load.engine.DiskCacheStrategy
-import com.bumptech.glide.request.RequestOptions
-import com.bumptech.glide.request.target.CustomTarget
-import com.bumptech.glide.request.target.Target.SIZE_ORIGINAL
-import com.bumptech.glide.request.transition.Transition
 import com.example.nexusapp.App
 import com.example.nexusapp.R
-import com.example.nexusapp.adapters.GalleryAdapter
-import com.example.nexusapp.constants.EMPTY_STRING
+import com.example.nexusapp.adapters.ArticleAdapter
+import com.example.nexusapp.constants.IMAGES
 import com.example.nexusapp.constants.TITLE
 import com.example.nexusapp.constants.URL
+import com.example.nexusapp.gallery.GalleryActivity
+import com.example.nexusapp.listener.OnClickListeners
 import com.example.nexusapp.listener.OnResultListeners
 import com.example.nexusapp.models.ArticleModel
 import com.example.nexusapp.parser.Parser
@@ -54,9 +46,9 @@ import java.util.*
 import kotlin.collections.ArrayList
 
 
-class FragmentArticle : Fragment(), OnResultListeners.FullArticle {
+class FragmentArticle : Fragment(), OnResultListeners.FullArticle, OnClickListeners.OnImageClick {
 
-    private val imagesList:ArrayList<String> = ArrayList()
+    private val imagesList: ArrayList<String> = ArrayList()
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
@@ -66,11 +58,15 @@ class FragmentArticle : Fragment(), OnResultListeners.FullArticle {
     }
 
 
-    fun newInstance(categoryUrl: String, viewTransitionName: String, title: String): FragmentArticle {
+    fun newInstance(
+        categoryUrl: String,
+        viewTransitionName: String,
+        title: String
+    ): FragmentArticle {
         val args = Bundle()
         args.putString(URL, categoryUrl)
         args.putString(TITLE, title)
-    //    args.putString(VIEW_TRANSITION_NAME, viewTransitionName)
+        //    args.putString(VIEW_TRANSITION_NAME, viewTransitionName)
         val fragment = FragmentArticle()
         fragment.arguments = args
         return fragment
@@ -106,25 +102,25 @@ class FragmentArticle : Fragment(), OnResultListeners.FullArticle {
             activity?.onBackPressed()
         }
 
-       loadContent()
+        loadContent()
         return rootView
     }
 
-    private fun iniPager(images: List<String>){
+    private fun iniPager(images: List<String>) {
         val pager: ViewPager2 = vp_article_images
-        val adapter = GalleryAdapter(images)
-        pager.offscreenPageLimit= 2
+        val adapter = ArticleAdapter(images, this@FragmentArticle)
+        pager.offscreenPageLimit = 2
         pager.setPageTransformer(SliderTransformer(2))
         pager.adapter = adapter
 
         TabLayoutMediator(page_indicator, pager)
         { it, position ->
-            it.customView = createTabItemView(images[position],position)
+            it.customView = createTabItemView(position)
 
         }.attach()
     }
 
-    private fun createTabItemView(imgUri: String,position:Int): View {
+    private fun createTabItemView(position: Int): View {
         val textView = TextView(App.applicationContext())
         val params = FrameLayout.LayoutParams(
             ViewGroup.LayoutParams.WRAP_CONTENT,
@@ -176,12 +172,10 @@ class FragmentArticle : Fragment(), OnResultListeners.FullArticle {
         imagesList.clear()
         imagesList.addAll(article.images)
         GlobalScope.launch(Dispatchers.Main) {
-            if (progressbar != null){
-                progressbar.visibility =  View.GONE
+            if (progressbar != null) {
+                progressbar.visibility = View.GONE
             }
             iniPager(imagesList)
-
-
 
 
             val webView: WebView = web_view
@@ -202,12 +196,9 @@ class FragmentArticle : Fragment(), OnResultListeners.FullArticle {
 
         }
 
-        for(image in article.images) {
-            Log.e("result", image)
-        }
     }
 
-    private fun htmlOptimize(htmlString: String):String{
+    private fun htmlOptimize(htmlString: String): String {
         val doc = Jsoup.parse(htmlString)
         doc.select("img").attr("width", "100%") // find all images and set with to 100%
         doc.select("figure").attr("style", "width: 80%") // find all figures and set with to 80%
@@ -220,6 +211,15 @@ class FragmentArticle : Fragment(), OnResultListeners.FullArticle {
             handler.proceed()
         }
     }
+
+
+    override fun click(imagesList: List<String>) {
+        val intent = Intent(activity,GalleryActivity::class.java);
+        intent.putStringArrayListExtra(IMAGES, imagesList as ArrayList<String>)
+        startActivity(intent)
+    }
+
+
 
 
 }

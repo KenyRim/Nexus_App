@@ -16,4 +16,5 @@ const val EMPTY_STRING = ""
 
 const val IMAGE_URL = "IMAGE_URL"
 const val URL = "URL"
+const val IMAGES = "IMAGES"
 
