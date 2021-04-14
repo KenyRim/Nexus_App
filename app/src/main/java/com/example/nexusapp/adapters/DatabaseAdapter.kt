@@ -2,6 +2,7 @@ package com.example.nexusapp.adapters
 
 import android.graphics.Bitmap
 import android.graphics.drawable.Drawable
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -20,7 +21,7 @@ import com.example.nexusapp.models.CategoryModel
 
 
 class DatabaseAdapter(
-    private val category: List<CategoryModel>,
+    private val category: ArrayList<CategoryModel>,
     private val onItemClick: OnClickListeners.OnContent,
     private val onDelClick: OnClickListeners.DeleteClick
 ) :
@@ -73,8 +74,9 @@ class DatabaseAdapter(
         }
 
         holder.ivSaveBtn.setOnClickListener {
+            Log.e("aass",position.toString())
             onDelClick.deleteClick(
-                position,
+                holder.adapterPosition,
                 item.url
             )
         }
@@ -87,6 +89,13 @@ class DatabaseAdapter(
         view.startAnimation(anim)
     }
 
+
+    internal fun removeItem(position: Int){
+        notifyItemRemoved(position)
+        category.removeAt(position)
+        notifyItemRangeChanged(position,category.size)
+
+    }
 
     override fun getItemCount() = category.size
 }

@@ -156,7 +156,8 @@ class FragmentDatabase : Fragment(), OnClickListeners.OnContent, OnClickListener
         db.delete(url)
         db.close()
 
-        adapter.notifyItemRemoved(position)
+        adapter.removeItem(position)
+
         Toast.makeText(App.applicationContext(),"Deleted",Toast.LENGTH_SHORT).show()
     }
 

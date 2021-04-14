@@ -71,8 +71,8 @@ class GalleryAdapter(
     override fun onBindViewHolder(holder: MyViewHolder, position: Int) {
         val item = images[position].replace("/thumbnails","")
         holder.bind(item)
-        val layoutParams = holder.itemView.layoutParams as StaggeredGridLayoutManager.LayoutParams
-        layoutParams.isFullSpan = true
+//        val layoutParams = holder.itemView.layoutParams as StaggeredGridLayoutManager.LayoutParams
+//        layoutParams.isFullSpan = true
 
         setAnimation(holder.itemView)
 
