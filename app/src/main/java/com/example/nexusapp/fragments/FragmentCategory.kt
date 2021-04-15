@@ -27,6 +27,7 @@ import com.example.nexusapp.listener.OnResultListeners
 import com.example.nexusapp.models.CategoryModel
 import com.example.nexusapp.parser.Parser
 import com.example.nexusapp.utils.Connection
+import com.example.nexusapp.utils.Alert
 import com.google.android.material.snackbar.Snackbar
 import kotlinx.android.synthetic.main.fragment_category.view.*
 import kotlinx.android.synthetic.main.item_category.*
@@ -218,11 +219,7 @@ class FragmentCategory : Fragment(), OnResultListeners.Category, OnClickListener
                 ?.commit()
 
         } else {
-            Toast.makeText(
-                App.applicationContext(),
-                getString(R.string.internet),
-                Toast.LENGTH_SHORT
-            ).show()
+            Alert.internet()
         }
     }
 

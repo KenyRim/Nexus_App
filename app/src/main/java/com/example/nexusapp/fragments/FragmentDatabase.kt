@@ -21,6 +21,7 @@ import com.example.nexusapp.constants.*
 import com.example.nexusapp.database.Database
 import com.example.nexusapp.listener.OnClickListeners
 import com.example.nexusapp.models.CategoryModel
+import com.example.nexusapp.utils.Alert
 import com.example.nexusapp.utils.Connection
 import com.google.android.material.snackbar.Snackbar
 import kotlinx.android.synthetic.main.fragment_category.view.*
@@ -142,11 +143,7 @@ class FragmentDatabase : Fragment(), OnClickListeners.OnContent, OnClickListener
                 ?.addToBackStack(FR_CATEGORIES)
                 ?.commit()
         else
-            Toast.makeText(
-                App.applicationContext(),
-                "Check your internet connection!",
-                Toast.LENGTH_SHORT
-            ).show()
+            Alert.internet()
 
     }
 

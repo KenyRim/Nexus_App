@@ -42,6 +42,10 @@ class CategoryAdapter(
 
     }
 
+    override fun getItemId(position: Int): Long {
+        return category[position]._id
+    }
+
     override fun onBindViewHolder(holder: MyViewHolder, position: Int) {
         val item = category[position]
         holder.titleTv.text = item.title

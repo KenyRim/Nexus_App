@@ -7,8 +7,10 @@
     xmlns:tools="http://schemas.android.com/tools">
 
 
+
    <androidx.viewpager2.widget.ViewPager2
        android:id="@+id/rv_all_images"
+       android:overScrollMode="never"
        android:layout_width="match_parent"
        android:layout_height="match_parent"
        tools:listitem="@layout/item_gallery"
@@ -22,5 +24,30 @@
        app:layout_constraintTop_toTopOf="parent"
        android:layout_margin="15dp"
        android:background="@drawable/ic_arrow_back"/>
+
+   <ImageButton
+       android:id="@+id/btn_left"
+       android:layout_width="50dp"
+       android:layout_height="60dp"
+       app:layout_constraintBottom_toBottomOf="parent"
+       app:layout_constraintStart_toStartOf="parent"
+       android:scaleType="fitStart"
+       android:src="@drawable/ic_arrow"
+       android:background="?selectableItemBackground"
+       android:layout_margin="15dp"
+       />
+
+   <ImageButton
+       android:id="@+id/btn_right"
+       android:layout_width="50dp"
+       android:layout_height="60dp"
+       android:layout_margin="15dp"
+       android:background="?selectableItemBackground"
+       android:scaleType="fitStart"
+       android:src="@drawable/ic_arrow"
+       app:layout_constraintBottom_toBottomOf="parent"
+       app:layout_constraintEnd_toEndOf="parent"
+       android:rotation="180"
+       />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

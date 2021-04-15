@@ -7,7 +7,6 @@ import android.transition.TransitionInflater
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.Toast
 import androidx.core.view.doOnPreDraw
 import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.RecyclerView
@@ -19,6 +18,7 @@ import com.example.nexusapp.listener.OnClickListeners
 import com.example.nexusapp.listener.OnResultListeners
 import com.example.nexusapp.parser.Parser
 import com.example.nexusapp.utils.Connection
+import com.example.nexusapp.utils.Alert
 import kotlinx.android.synthetic.main.fragment_categories.view.*
 import kotlinx.android.synthetic.main.titlebar.*
 import kotlinx.android.synthetic.main.titlebar.view.*
@@ -81,12 +81,15 @@ class FragmentCategories : Fragment(), OnResultListeners.Categories, OnClickList
             activity?.onBackPressed()
         }
 
+        if (Connection().isOnline(App.applicationContext()))
         GlobalScope.launch(IO) {
             Parser().parseCategories(
                 BASE_URL + arguments?.getString(GAMES) + SECTION + CATEGORIES,
                 CATEGORIES_HTML_PATH,
                 this@FragmentCategories
             )
+        }else{
+            Alert.internet()
         }
 
         return rootView
@@ -114,11 +117,7 @@ class FragmentCategories : Fragment(), OnResultListeners.Categories, OnClickList
                 ?.addToBackStack(FR_CATEGORIES)
                 ?.commit()
         else
-            Toast.makeText(
-                App.applicationContext(),
-                "Check your internet connection!",
-                Toast.LENGTH_SHORT
-            ).show()
+            Alert.internet()
 
 
 //        if (Connection().isOnline(App.applicationContext()))

@@ -2,13 +2,13 @@ package com.example.nexusapp.fragments
 
 import android.annotation.SuppressLint
 import android.content.Intent
+import android.content.res.Resources
 import android.net.http.SslError
 import android.os.Build
 import android.os.Bundle
 import android.text.Html
 import android.transition.Fade
 import android.transition.TransitionInflater
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -188,6 +188,8 @@ class FragmentArticle : Fragment(), OnResultListeners.FullArticle, OnClickListen
             webView.settings.cacheMode = WebSettings.LOAD_CACHE_ELSE_NETWORK
             webView.settings.useWideViewPort = true
             webView.settings.layoutAlgorithm = WebSettings.LayoutAlgorithm.SINGLE_COLUMN
+            webView.settings.defaultFontSize = R.dimen.web_font_size
+            webView.settings.setSupportZoom(true)
 
             webView.loadData(htmlOptimize(article.article), "text/html; charset=utf-8", "UTF-8")
 
@@ -199,10 +201,15 @@ class FragmentArticle : Fragment(), OnResultListeners.FullArticle, OnClickListen
     }
 
     private fun htmlOptimize(htmlString: String): String {
+        val width = Resources.getSystem().displayMetrics.widthPixels
+        val height = width.div(1.5)
         val doc = Jsoup.parse(htmlString)
-        doc.select("img").attr("width", "100%") // find all images and set with to 100%
-        doc.select("figure").attr("style", "width: 80%") // find all figures and set with to 80%
-        doc.select("iframe").attr("style", "width: 100%") // find all iframes and set with to 100%
+       // doc.select("img").attr("width", "100%") // find all images and set with to 100%
+       // doc.select("figure").attr("style", "width: 80%") // find all figures and set with to 80%
+        doc.select("iframe").attr(
+            "style",
+            "display: block; max-width: $width; border: 0; width: $width; height: $height; padding: 0px; margin: 0px;"
+        ) // find all iframes and set with to 100%
         return doc.html()
     }
 
@@ -214,7 +221,7 @@ class FragmentArticle : Fragment(), OnResultListeners.FullArticle, OnClickListen
 
 
     override fun click(imagesList: List<String>) {
-        val intent = Intent(activity,GalleryActivity::class.java);
+        val intent = Intent(activity, GalleryActivity::class.java)
         intent.putStringArrayListExtra(IMAGES, imagesList as ArrayList<String>)
         startActivity(intent)
     }

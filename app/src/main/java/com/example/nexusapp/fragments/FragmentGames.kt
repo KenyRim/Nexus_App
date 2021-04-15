@@ -14,6 +14,7 @@ import com.example.nexusapp.adapters.GamesAdapter
 import com.example.nexusapp.constants.FR_CATEGORIES
 import com.example.nexusapp.constants.FR_GAMES
 import com.example.nexusapp.listener.OnClickListeners
+import com.example.nexusapp.utils.Alert
 import com.example.nexusapp.utils.Connection
 import kotlinx.android.synthetic.main.fragment_games.view.*
 import kotlinx.android.synthetic.main.main_titlebar.*
@@ -100,11 +101,7 @@ class FragmentGames : Fragment(), OnClickListeners.OnGame {
                 ?.addToBackStack(FR_GAMES)
                 ?.commit()
         else
-            Toast.makeText(
-                App.applicationContext(),
-                "Check your internet connection!",
-                Toast.LENGTH_SHORT
-            ).show()
+            Alert.internet()
     }
 
 
